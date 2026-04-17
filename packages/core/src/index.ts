@@ -34,3 +34,6 @@ export {
   group,
   skip,
 } from "./builder.js";
+
+export { render } from "./render.js";
+export type { RenderOptions } from "./render.js";
