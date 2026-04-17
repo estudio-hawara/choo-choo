@@ -1,0 +1,59 @@
+/* Minimal default styles for choo-choo railroad diagrams.
+ * Import via: import "@choo-choo/vanilla/styles.css";
+ * or target `.choo-choo` descendants yourself.
+ */
+
+.choo-choo {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.choo-choo path {
+  fill: none;
+  stroke: #444;
+  stroke-width: 1;
+}
+
+.choo-choo text {
+  fill: #111;
+}
+
+.choo-choo .terminal rect {
+  fill: hsl(200 80% 94%);
+  stroke: hsl(200 60% 40%);
+}
+
+.choo-choo .non-terminal rect {
+  fill: hsl(40 80% 94%);
+  stroke: hsl(40 60% 40%);
+}
+
+.choo-choo .special path {
+  fill: hsl(280 60% 94%);
+  stroke: hsl(280 60% 40%);
+}
+
+.choo-choo .comment text,
+.choo-choo .comment-text {
+  font-style: italic;
+  fill: #666;
+}
+
+.choo-choo .group-box {
+  fill: none;
+  stroke: #999;
+  stroke-dasharray: 4 4;
+}
+
+.choo-choo .group-label,
+.choo-choo .diagram-label {
+  font-size: 11px;
+  fill: #666;
+}
+
+.choo-choo-error {
+  color: #b00;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+  margin: 0;
+}

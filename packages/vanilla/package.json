@@ -1,0 +1,46 @@
+{
+  "name": "@choo-choo/vanilla",
+  "version": "0.0.0",
+  "description": "Vanilla JS binding for choo-choo: the <choo-choo> custom element and an imperative mount() helper.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./styles.css": "./styles.css"
+  },
+  "files": ["dist", "src", "styles.css"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      },
+      "./styles.css": "./styles.css"
+    }
+  },
+  "dependencies": {
+    "@choo-choo/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@choo-choo/parser-ebnf": "workspace:*",
+    "happy-dom": "^15.11.6",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}
