@@ -68,7 +68,7 @@ main {
   font-size: 0.85rem;
 }
 
-textarea#ebnf-source {
+textarea#source {
   width: 100%;
   min-height: 180px;
   padding: 10px 12px;
@@ -81,7 +81,7 @@ textarea#ebnf-source {
   color: var(--color-text);
 }
 
-textarea#ebnf-source:focus {
+textarea#source:focus {
   outline: 2px solid var(--color-accent);
   outline-offset: 1px;
 }
