@@ -101,10 +101,12 @@ function applyGrammar(id: GrammarId): void {
   const source = DEFAULT_SOURCES[id];
   els.source.value = source;
   els.output.setAttribute("source", source);
-  refreshRuleOptions(source);
+  // Swapping grammars always jumps to the last rule of the new default source,
+  // even if the previous rule name happens to exist in both grammars.
+  refreshRuleOptions(source, { preferLast: true });
 }
 
-function refreshRuleOptions(source: string): void {
+function refreshRuleOptions(source: string, options: { preferLast?: boolean } = {}): void {
   const parser = PARSERS[currentGrammar];
   let ruleNames: string[] = [];
   try {
@@ -113,7 +115,7 @@ function refreshRuleOptions(source: string): void {
     // Keep the previous selection while the grammar is broken.
     return;
   }
-  const previous = els.rule.value;
+  const previous = options.preferLast ? "" : els.rule.value;
   els.rule.innerHTML = "";
   for (const name of ruleNames) {
     const option = document.createElement("option");
