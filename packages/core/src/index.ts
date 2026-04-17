@@ -18,6 +18,8 @@ export type {
   SourceRange,
 } from "./ir.js";
 
+export type { GrammarParser, GrammarRule, ParsedGrammar } from "./grammar.js";
+
 export {
   diagram,
   start,

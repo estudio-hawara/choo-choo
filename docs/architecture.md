@@ -81,7 +81,7 @@ The exact shape of each node is specified in `docs/ir.md` when milestone M1 land
 Every grammar parser implements a single interface exported from `@choo-choo/core`:
 
 - `id` — a short identifier (`"ebnf"`, `"antlr"`, `"peg"`, …) used by bindings and the playground.
-- `parse(source: string)` — consumes a grammar source and returns an IR tree rooted at a `diagram` node.
+- `parse(source: string): ParsedGrammar` — consumes a grammar source and returns an ordered list of named `GrammarRule` values. Each rule carries a `Diagram` IR tree, its name, and an optional `SourceRange` pointing back at the rule's definition in the source.
 
 Parsers are **standalone packages**. Adding a new grammar (ABNF, classic BNF, …) requires no changes to `core` or to any binding.
 
