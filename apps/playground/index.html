@@ -8,12 +8,12 @@
   <body>
     <header class="page-header">
       <h1>choo-choo</h1>
-      <p>Railroad diagrams from EBNF — or from the manual builder.</p>
+      <p>Railroad diagrams from EBNF.</p>
     </header>
 
     <main>
       <section class="panel">
-        <h2>From EBNF source</h2>
+        <h2>EBNF source</h2>
         <p class="hint">
           Edit the grammar — pick a rule and a compose mode to see prior rules inlined.
         </p>
@@ -40,24 +40,11 @@
         </div>
       </section>
 
-      <section class="panel">
-        <h2>Manual IR via the builder</h2>
-        <p class="hint">
-          The diagram below is constructed with factory calls — no parser involved.
-        </p>
-
-        <pre><code id="manual-code"></code></pre>
-
-        <div class="output-wrapper">
-          <choo-choo id="manual-output"></choo-choo>
-        </div>
-      </section>
     </main>
 
     <footer class="page-footer">
       <p>
-        Pre-alpha. Specs live in <code>docs/</code>. Architecture: <code>packages/core</code>,
-        <code>parser-utils</code>, <code>parser-ebnf</code>, <code>vanilla</code>.
+        The specification lives in <code>docs/</code>.
       </p>
     </footer>
 

@@ -1,4 +1,3 @@
-import { diagram, nonTerminal, oneOrMore, optional, sequence, terminal } from "@choo-choo/core";
 import { ebnfParser } from "@choo-choo/parser-ebnf";
 import "@choo-choo/vanilla";
 import type { ChooChooElement } from "@choo-choo/vanilla";
@@ -8,19 +7,10 @@ import "./style.css";
 const DEFAULT_EBNF = `(* Arithmetic expressions — edit me. *)
 digit      = ? 0-9 ?;
 number     = digit , { digit };
-expression = term , { ("+" | "-") , term };
 term       = factor , { ("*" | "/") , factor };
+expression = term , { ("+" | "-") , term };
 factor     = number | "(" , expression , ")";
 `;
-
-const MANUAL_SNIPPET = `diagram(
-  sequence(
-    nonTerminal("identifier"),
-    terminal("("),
-    optional(oneOrMore(nonTerminal("argument"), terminal(","))),
-    terminal(")"),
-  ),
-);`;
 
 // --- EBNF panel -------------------------------------------------------------
 
@@ -36,6 +26,8 @@ if (!ebnfSourceEl || !ebnfOutputEl || !ebnfRuleEl || !ebnfComposeEl) {
 ebnfOutputEl.parser = ebnfParser;
 ebnfSourceEl.value = DEFAULT_EBNF;
 ebnfOutputEl.setAttribute("source", DEFAULT_EBNF);
+ebnfComposeEl.value = "grouped";
+ebnfOutputEl.setAttribute("compose", "grouped");
 
 const refreshRuleOptions = (source: string): void => {
   let ruleNames: string[] = [];
@@ -53,11 +45,12 @@ const refreshRuleOptions = (source: string): void => {
     option.textContent = name;
     ebnfRuleEl.append(option);
   }
+  const last = ruleNames[ruleNames.length - 1];
   if (ruleNames.includes(previous)) {
     ebnfRuleEl.value = previous;
-  } else if (ruleNames[0]) {
-    ebnfRuleEl.value = ruleNames[0];
-    ebnfOutputEl.setAttribute("rule", ruleNames[0]);
+  } else if (last) {
+    ebnfRuleEl.value = last;
+    ebnfOutputEl.setAttribute("rule", last);
   }
 };
 
@@ -82,26 +75,6 @@ ebnfRuleEl.addEventListener("change", () => {
 ebnfComposeEl.addEventListener("change", () => {
   ebnfOutputEl.setAttribute("compose", ebnfComposeEl.value);
 });
-
-// --- Manual IR panel --------------------------------------------------------
-
-const manualCodeEl = document.querySelector<HTMLElement>("#manual-code");
-const manualOutputEl = document.querySelector<ChooChooElement>("#manual-output");
-
-if (!manualCodeEl || !manualOutputEl) {
-  throw new Error("playground: Manual panel elements not found");
-}
-
-manualCodeEl.textContent = MANUAL_SNIPPET;
-
-manualOutputEl.ir = diagram(
-  sequence(
-    nonTerminal("identifier"),
-    terminal("("),
-    optional(oneOrMore(nonTerminal("argument"), terminal(","))),
-    terminal(")"),
-  ),
-);
 
 // --- Helpers ----------------------------------------------------------------
 
