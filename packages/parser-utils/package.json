@@ -1,7 +1,7 @@
 {
-  "name": "@choo-choo/core",
+  "name": "@choo-choo/parser-utils",
   "version": "0.0.0",
-  "description": "IR, manual builder and SVG renderer for choo-choo railroad diagrams.",
+  "description": "Shared lexer primitives for choo-choo grammar parsers: reader, tokenizer, specification, errors.",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -30,6 +30,9 @@
         "require": "./dist/index.cjs"
       }
     }
+  },
+  "dependencies": {
+    "@choo-choo/core": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.3.5",
