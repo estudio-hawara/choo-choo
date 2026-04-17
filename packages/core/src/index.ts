@@ -17,3 +17,20 @@ export type {
   SourcePosition,
   SourceRange,
 } from "./ir.js";
+
+export {
+  diagram,
+  start,
+  end,
+  terminal,
+  nonTerminal,
+  special,
+  comment,
+  sequence,
+  choice,
+  optional,
+  oneOrMore,
+  zeroOrMore,
+  group,
+  skip,
+} from "./builder.js";
