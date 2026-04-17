@@ -1,4 +1,7 @@
-# EBNF (ISO/IEC 14977)
+---
+title: EBNF (ISO/IEC 14977)
+description: The ISO/IEC 14977 subset supported by @choo-choo/parser-ebnf.
+---
 
 The `@choo-choo/parser-ebnf` package consumes **ISO/IEC 14977 Extended Backus–Naur Form** source and produces a `ParsedGrammar` — a list of named rules, each carrying a `Diagram` IR tree. This document is the spec the parser must implement; tests are written against it.
 

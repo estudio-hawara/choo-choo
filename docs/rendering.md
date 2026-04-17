@@ -1,4 +1,7 @@
-# Rendering
+---
+title: Rendering
+description: The pure `render(diagram)` function that turns IR into a self-contained SVG string.
+---
 
 The renderer is the only component in `@choo-choo/core` that emits SVG. It is a **pure function** that consumes a `Diagram` IR tree (see [`ir.md`](./ir.md)) and returns a self-contained SVG string. It never touches the DOM, depends on no runtime globals, and is safe to call on any JavaScript runtime (Node, Deno, Bun, Cloudflare Workers, browsers).
 

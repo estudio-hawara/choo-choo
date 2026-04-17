@@ -1,4 +1,7 @@
-# PEG (peggy dialect)
+---
+title: PEG (peggy dialect)
+description: The peggy / PEG.js subset supported by @choo-choo/parser-peg.
+---
 
 The `@choo-choo/parser-peg` package consumes **Parsing Expression Grammar source in the peggy / PEG.js dialect** (`peggyjs.org`) and produces a `ParsedGrammar` — a flat list of named rules, each carrying a `Diagram` IR tree. This document is the spec the parser must implement; tests are written against it.
 

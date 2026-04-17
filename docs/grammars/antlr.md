@@ -1,4 +1,7 @@
-# ANTLR4
+---
+title: ANTLR4
+description: The ANTLR4 subset supported by @choo-choo/parser-antlr.
+---
 
 The `@choo-choo/parser-antlr` package consumes **ANTLR4 grammar source** (`.g4` files) and produces a `ParsedGrammar` — a flat list of named rules, each carrying a `Diagram` IR tree. This document is the spec the parser must implement; tests are written against it.
 

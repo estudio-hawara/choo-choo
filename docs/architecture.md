@@ -1,4 +1,7 @@
-# Architecture
+---
+title: Architecture
+description: The target architecture of choo-choo — IR, renderer, parsers, and bindings.
+---
 
 This document is the target architecture of choo-choo. It reflects intent — pieces are materialised as the roadmap advances.
 

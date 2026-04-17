@@ -1,4 +1,7 @@
-# React binding
+---
+title: React binding
+description: The SSR-safe <ChooChoo> React component — pure function, no hooks, works in RSC.
+---
 
 `@choo-choo/react` is the React binding. It ships a single pure functional component, `<ChooChoo>`, that renders a railroad diagram as inline SVG. The binding works unchanged in client and server contexts — including React Server Components — because the component uses no hooks, no effects, and no refs: it just calls `render()` (and, when given a grammar, `composeRule()`) from `@choo-choo/core` and returns a `<div>` wrapping the SVG via `dangerouslySetInnerHTML`.
 

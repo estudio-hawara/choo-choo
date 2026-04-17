@@ -1,6 +1,9 @@
-# Manual builder
+---
+title: Manual builder
+description: Ergonomic factory functions that construct IR directly, without going through a grammar parser.
+---
 
-The builder is the ergonomic API that users reach for when they want to **construct IR in code**, without going through a grammar parser. It lives in `@choo-choo/core` and sits next to the renderer; everything in this document produces values that conform to the IR spec (`docs/ir.md`) and are consumable by `render` (`docs/rendering.md`).
+The builder is the ergonomic API that users reach for when they want to **construct IR in code**, without going through a grammar parser. It lives in `@choo-choo/core` and sits next to the renderer; everything in this document produces values that conform to the IR spec (`ir.md`) and are consumable by `render` (`rendering.md`).
 
 ## What it is
 

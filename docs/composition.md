@@ -1,4 +1,7 @@
-# Composition
+---
+title: Composition
+description: The opt-in `composeRule` transform that inlines prior rules into a rendered diagram.
+---
 
 A grammar is usually split across many rules that reference each other by name. By default, choo-choo renders **one rule at a time**: pick a rule, get a diagram whose `NonTerminal` leaves are the names of the other rules. Composition is an opt-in transform that **inlines those references** so a rule can be rendered as a single self-contained diagram.
 

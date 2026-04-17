@@ -1,0 +1,1 @@
+../../../../../../docs/bindings/vue.md

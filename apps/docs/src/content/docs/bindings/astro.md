@@ -1,0 +1,1 @@
+../../../../../../docs/bindings/astro.md

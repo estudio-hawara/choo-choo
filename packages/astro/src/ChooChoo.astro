@@ -1,0 +1,56 @@
+---
+import {
+  type ComposeMode,
+  type Diagram,
+  type GrammarParser,
+  type ParsedGrammar,
+  type RenderOptions,
+  composeRule,
+  render,
+} from "@choo-choo/core";
+import type { ChooChooProps } from "./types.ts";
+
+type Props = ChooChooProps;
+
+const props = Astro.props as Props;
+
+function resolveDiagram(): Diagram {
+  if ("ir" in props) return props.ir;
+  const parsed: ParsedGrammar = props.parser.parse(props.source);
+  const rule = props.rule
+    ? parsed.rules.find((candidate) => candidate.name === props.rule)
+    : parsed.rules[0];
+  if (!rule) {
+    throw new Error(
+      props.rule
+        ? `<ChooChoo>: rule "${props.rule}" not found in parsed grammar`
+        : "<ChooChoo>: parsed grammar has no rules",
+    );
+  }
+  return composeRule(parsed, rule.name, (props as { compose?: ComposeMode }).compose ?? "no");
+}
+
+function stripDiagramProps(): Record<string, unknown> {
+  const { options: _options, ...rest } = props as Record<string, unknown> & {
+    options?: RenderOptions;
+  };
+  if ("ir" in rest) {
+    const { ir: _ir, ...wrapper } = rest;
+    return wrapper;
+  }
+  const {
+    source: _source,
+    parser: _parser,
+    rule: _rule,
+    compose: _compose,
+    ...wrapper
+  } = rest;
+  return wrapper;
+}
+
+const diagram = resolveDiagram();
+const svg = render(diagram, (props as { options?: RenderOptions }).options);
+const wrapperProps = stripDiagramProps();
+---
+
+<div {...wrapperProps} set:html={svg} />

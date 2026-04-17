@@ -1,4 +1,7 @@
-# Intermediate Representation (IR)
+---
+title: Intermediate Representation (IR)
+description: The flat discriminated-union Node type that parsers produce and the renderer consumes.
+---
 
 The IR is the single contract between everything that **produces** diagrams (parsers, the manual builder) and everything that **consumes** them (the renderer, bindings). It is a flat discriminated union of pure-data `Node` values — no methods, no SVG awareness, no framework coupling.
 

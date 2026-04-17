@@ -1,0 +1,28 @@
+{
+  "name": "@choo-choo/astro",
+  "version": "0.0.0",
+  "description": "Astro binding for choo-choo: the <ChooChoo> .astro component, SSR-only.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "astro": "./src/ChooChoo.astro",
+      "default": "./src/ChooChoo.astro"
+    },
+    "./styles.css": "./styles.css"
+  },
+  "files": ["src", "styles.css"],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@choo-choo/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "astro": "^4 || ^5"
+  },
+  "devDependencies": {
+    "astro": "^5.0.0",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,4 +1,7 @@
-# Vanilla JS binding
+---
+title: Vanilla JS binding
+description: The framework-free <choo-choo> custom element plus an imperative mount() helper.
+---
 
 `@choo-choo/vanilla` is the framework-free binding. It ships two entry points that speak to the same underlying renderer:
 
