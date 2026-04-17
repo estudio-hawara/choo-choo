@@ -14,6 +14,7 @@
     "@choo-choo/core": "workspace:*",
     "@choo-choo/parser-antlr": "workspace:*",
     "@choo-choo/parser-ebnf": "workspace:*",
+    "@choo-choo/parser-peg": "workspace:*",
     "@choo-choo/vanilla": "workspace:*"
   },
   "devDependencies": {

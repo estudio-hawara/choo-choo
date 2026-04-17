@@ -7,7 +7,8 @@ function parse(source: string) {
   return antlrParser.parse(source);
 }
 
-function stripSource(node: Node): unknown {
+function stripSource(node: Node | undefined): unknown {
+  if (node === undefined) return undefined;
   const { source: _source, ...rest } = node as Node & { source?: unknown };
   const clone: Record<string, unknown> = { ...rest };
   for (const [key, value] of Object.entries(clone)) {
@@ -288,7 +289,7 @@ describe("ANTLR parser / strip-without-rendering", () => {
     const grammar = parse(`COMMENT : '//' .*? '\\n' -> channel(HIDDEN), type(LINE_COMMENT) ;`);
     // The body is a sequence: '//', '.*?', '\n'. '.*?' is wildcard with non-greedy suffix.
     const child = grammar.rules[0]?.diagram.child;
-    expect(child.kind).toBe("sequence");
+    expect(child?.kind).toBe("sequence");
   });
 });
 

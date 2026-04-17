@@ -1,12 +1,13 @@
 import type { GrammarParser } from "@choo-choo/core";
 import { antlrParser } from "@choo-choo/parser-antlr";
 import { ebnfParser } from "@choo-choo/parser-ebnf";
+import { pegParser } from "@choo-choo/parser-peg";
 import "@choo-choo/vanilla";
 import type { ChooChooElement } from "@choo-choo/vanilla";
 import "@choo-choo/vanilla/styles.css";
 import "./style.css";
 
-type GrammarId = "ebnf" | "antlr";
+type GrammarId = "ebnf" | "antlr" | "peg";
 
 const DEFAULT_SOURCES: Record<GrammarId, string> = {
   ebnf: `(* Arithmetic expressions — edit me. *)
@@ -26,11 +27,19 @@ expr   : term (('+' | '-') term)* ;
 term   : factor (('*' | '/') factor)* ;
 factor : INT | '(' expr ')' ;
 `,
+  peg: `// Arithmetic expressions — edit me.
+digit  = [0-9]
+number = digit+
+factor = number / "(" expr ")"
+term   = factor (("*" / "/") factor)*
+expr   = term (("+" / "-") term)*
+`,
 };
 
 const PARSERS: Record<GrammarId, GrammarParser> = {
   ebnf: ebnfParser,
   antlr: antlrParser,
+  peg: pegParser,
 };
 
 interface PlaygroundElements {
