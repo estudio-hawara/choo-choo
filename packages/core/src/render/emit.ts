@@ -19,6 +19,7 @@ import {
   LEAF_HALF_HEIGHT,
   type MeasureCache,
   type Measurements,
+  SEQUENCE_SPACING,
   measure,
 } from "./measure.js";
 import type { ResolvedOptions } from "./options.js";
@@ -177,7 +178,15 @@ function emitSequence(node: Sequence, context: EmitContext): string {
   const source = sourceAttributes(node, context.options);
   let cursor = 0;
   const parts: string[] = [];
-  for (const child of node.children) {
+  for (let index = 0; index < node.children.length; index++) {
+    if (index > 0) {
+      parts.push(
+        `<path d="M${formatNumber(cursor)} 0 h${formatNumber(SEQUENCE_SPACING)}"/>`,
+      );
+      cursor += SEQUENCE_SPACING;
+    }
+    const child = node.children[index];
+    if (!child) throw new Error("unreachable");
     const childSvg = emit(child, context);
     parts.push(`<g transform="translate(${formatNumber(cursor)} 0)">${childSvg}</g>`);
     cursor += measure(child, context.options, context.cache).width;
@@ -342,10 +351,10 @@ function emitRepetition(node: Repetition, context: EmitContext): string {
     `a${arcRadius} ${arcRadius} 0 0 1 ${arcRadius} ${arcRadius} ` +
     `v${formatNumber(returnY - 2 * arcRadius)} ` +
     `a${arcRadius} ${arcRadius} 0 0 1 -${arcRadius} ${arcRadius} ` +
-    `H${formatNumber(childLeft - arcRadius)} ` +
+    `H${formatNumber(childLeft)} ` +
     `a${arcRadius} ${arcRadius} 0 0 1 -${arcRadius} -${arcRadius} ` +
     `v-${formatNumber(returnY - 2 * arcRadius)} ` +
-    `a${arcRadius} ${arcRadius} 0 0 1 ${arcRadius} -${arcRadius} Z"/>`;
+    `a${arcRadius} ${arcRadius} 0 0 1 ${arcRadius} -${arcRadius}"/>`;
 
   let separatorSvg = "";
   if (node.separator) {

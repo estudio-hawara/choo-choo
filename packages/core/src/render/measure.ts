@@ -17,6 +17,7 @@ export const MARKER_WIDTH = 20;
 export const GROUP_PADDING_X = 10;
 export const GROUP_PADDING_Y = 4;
 export const GROUP_LABEL_HEIGHT = 14;
+export const SEQUENCE_SPACING = 10;
 
 function leafMeasurement(textLength: number): Measurements {
   return {
@@ -65,8 +66,9 @@ function compute(
       return { width: 0, up: 0, down: 0 };
     case "sequence": {
       const childMeasurements = node.children.map((child) => measure(child, options, cache));
+      const gaps = Math.max(0, childMeasurements.length - 1) * SEQUENCE_SPACING;
       return {
-        width: childMeasurements.reduce((sum, current) => sum + current.width, 0),
+        width: childMeasurements.reduce((sum, current) => sum + current.width, 0) + gaps,
         up: Math.max(...childMeasurements.map((current) => current.up)),
         down: Math.max(...childMeasurements.map((current) => current.down)),
       };
