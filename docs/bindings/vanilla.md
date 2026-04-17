@@ -210,7 +210,7 @@ The rendered SVG carries the same CSS classes documented in [`../rendering.md`](
    import "@choo-choo/vanilla/styles.css";
    ```
 
-   This re-exports the same file as `@choo-choo/core/styles.css`. Importing it twice is harmless.
+   The canonical file lives in `@choo-choo/core/styles.css`; the vanilla subexport is a one-line re-export for convenience so consumers don't need to reach into `core` themselves. Every binding follows the same pattern. Importing it more than once is harmless.
 
 The binding does **not** inject any styles by default. Consumers opt in.
 

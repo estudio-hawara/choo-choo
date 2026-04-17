@@ -1,7 +1,7 @@
 {
-  "name": "@choo-choo/core",
+  "name": "@choo-choo/react",
   "version": "0.0.0",
-  "description": "IR, manual builder and SVG renderer for choo-choo railroad diagrams.",
+  "description": "React binding for choo-choo: the <ChooChoo> component, SSR-safe and hook-free.",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -33,7 +33,20 @@
       "./styles.css": "./styles.css"
     }
   },
+  "dependencies": {
+    "@choo-choo/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  },
   "devDependencies": {
+    "@choo-choo/parser-ebnf": "workspace:*",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "happy-dom": "^15.11.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "tsup": "^8.3.5",
     "typescript": "^5.6.3",
     "vitest": "^2.1.8"

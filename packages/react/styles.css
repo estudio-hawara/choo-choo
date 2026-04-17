@@ -1,5 +1,5 @@
 /* Re-export of the canonical stylesheet that lives in @choo-choo/core.
  * Kept as a tiny @import so consumers can keep writing:
- *   import "@choo-choo/vanilla/styles.css";
+ *   import "@choo-choo/react/styles.css";
  */
 @import "@choo-choo/core/styles.css";
