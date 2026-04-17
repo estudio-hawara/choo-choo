@@ -15,10 +15,25 @@
       <section class="panel">
         <h2>From EBNF source</h2>
         <p class="hint">
-          Edit the grammar — the diagram for the first rule re-renders as you type.
+          Edit the grammar — pick a rule and a compose mode to see prior rules inlined.
         </p>
 
         <textarea id="ebnf-source" spellcheck="false" autocomplete="off"></textarea>
+
+        <div class="controls">
+          <label>
+            Rule
+            <select id="ebnf-rule"></select>
+          </label>
+          <label>
+            Compose
+            <select id="ebnf-compose">
+              <option value="no">no</option>
+              <option value="yes">yes</option>
+              <option value="grouped">grouped</option>
+            </select>
+          </label>
+        </div>
 
         <div class="output-wrapper">
           <choo-choo id="ebnf-output"></choo-choo>

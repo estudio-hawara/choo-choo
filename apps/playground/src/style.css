@@ -103,6 +103,31 @@ textarea#ebnf-source:focus {
   overflow-x: auto;
 }
 
+.controls {
+  display: flex;
+  gap: var(--spacing);
+  margin-top: var(--spacing);
+  flex-wrap: wrap;
+}
+
+.controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.controls select {
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: #fafafa;
+  color: var(--color-text);
+}
+
 .output-wrapper {
   margin-top: var(--spacing);
   padding: var(--spacing);

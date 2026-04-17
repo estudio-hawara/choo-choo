@@ -23,13 +23,14 @@ Registered the first time `@choo-choo/vanilla` is imported — calling `import "
 
 ### Attributes
 
-| Attribute  | Type     | Default | Purpose                                                                                               |
-|------------|----------|---------|-------------------------------------------------------------------------------------------------------|
-| `source`   | string   | —       | Grammar source to parse. Paired with `grammar` (or the `.parser` property).                           |
-| `grammar`  | string   | —       | Short id of the grammar (`"ebnf"`, `"antlr"`, `"peg"`, …). Triggers a dynamic `import()` of the parser. |
-| `rule`     | string   | —       | Name of the rule to render from the parsed grammar. If omitted, the first rule is rendered.           |
+| Attribute  | Type                          | Default | Purpose                                                                                               |
+|------------|-------------------------------|---------|-------------------------------------------------------------------------------------------------------|
+| `source`   | string                        | —       | Grammar source to parse. Paired with `grammar` (or the `.parser` property).                           |
+| `grammar`  | string                        | —       | Short id of the grammar (`"ebnf"`, `"antlr"`, `"peg"`, …). Triggers a dynamic `import()` of the parser. |
+| `rule`     | string                        | —       | Name of the rule to render from the parsed grammar. If omitted, the first rule is rendered.           |
+| `compose`  | `"no" \| "yes" \| "grouped"` | `"no"`  | Inlines references to prior rules into the rendered rule. See [composition](../composition.md).       |
 
-Attributes are reactive: changing any of them triggers a re-render. Setting `source` or `grammar` to an empty string clears the diagram.
+Attributes are reactive: changing any of them triggers a re-render. Setting `source` or `grammar` to an empty string clears the diagram. An unknown `compose` value raises a render error.
 
 Alternatively to the `source` attribute, the grammar source can live inside the element as its text content — see [Source from element contents](#source-from-element-contents) below. This is the recommended shape for multi-line grammars.
 
@@ -147,6 +148,7 @@ type MountOptions =
       source: string;
       parser: GrammarParser;
       rule?: string;
+      compose?: "no" | "yes" | "grouped";
       options?: RenderOptions;
     };
 
@@ -161,6 +163,7 @@ Behaviour:
 
 - The target is emptied and its `innerHTML` replaced by the rendered SVG string.
 - If `options` resolves to a multi-rule `ParsedGrammar`, the `rule` field selects which rule to draw. Without `rule`, the first rule wins.
+- The `compose` field routes the selected rule through [`composeRule`](../composition.md) before rendering. Default `"no"`.
 - Parsing or rendering errors are rethrown synchronously; the target is left empty.
 
 ### Example

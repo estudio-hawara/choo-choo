@@ -37,9 +37,9 @@ describe("mount()", () => {
   });
 
   it("throws when the requested rule is not in the parsed grammar", () => {
-    expect(() =>
-      mount(host, { source: `a = "x";`, parser: ebnfParser, rule: "missing" }),
-    ).toThrow(/rule "missing" not found/);
+    expect(() => mount(host, { source: `a = "x";`, parser: ebnfParser, rule: "missing" })).toThrow(
+      /rule "missing" not found/,
+    );
   });
 
   it("forwards RenderOptions (emitSourceData) to the renderer", () => {
@@ -58,5 +58,31 @@ describe("mount()", () => {
     expect(svg).toContain(`class="sequence"`);
     expect(svg).toContain(">a</text>");
     expect(svg).toContain(">b</text>");
+  });
+
+  it("inlines prior rules when compose: 'yes'", () => {
+    mount(host, {
+      source: `digit = "0" | "1"; pair = digit , digit;`,
+      parser: ebnfParser,
+      rule: "pair",
+      compose: "yes",
+    });
+    const svg = host.innerHTML;
+    expect(svg).toContain(`class="terminal"`);
+    expect(svg).not.toContain(`class="non-terminal"`);
+    expect(svg).toContain(">0</text>");
+    expect(svg).toContain(">1</text>");
+  });
+
+  it("wraps inlined rules in a labelled group when compose: 'grouped'", () => {
+    mount(host, {
+      source: `digit = "0" | "1"; pair = digit , digit;`,
+      parser: ebnfParser,
+      rule: "pair",
+      compose: "grouped",
+    });
+    const svg = host.innerHTML;
+    expect(svg).toContain(`class="group"`);
+    expect(svg).toContain(">digit</text>");
   });
 });

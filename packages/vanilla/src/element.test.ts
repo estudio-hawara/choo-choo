@@ -80,6 +80,40 @@ describe("<choo-choo> rendering paths", () => {
     expect(element.innerHTML).not.toContain(">1</text>");
   });
 
+  it("inlines prior rules when compose='yes'", async () => {
+    element.parser = ebnfParser;
+    element.setAttribute("source", `digit = "0" | "1"; pair = digit , digit;`);
+    element.setAttribute("rule", "pair");
+    element.setAttribute("compose", "yes");
+    await flush();
+    expect(element.innerHTML).toContain(">0</text>");
+    expect(element.innerHTML).toContain(">1</text>");
+    expect(element.innerHTML).not.toContain(`class="non-terminal"`);
+  });
+
+  it("wraps inlined rules in a labelled group when compose='grouped'", async () => {
+    element.parser = ebnfParser;
+    element.setAttribute("source", `digit = "0" | "1"; pair = digit , digit;`);
+    element.setAttribute("rule", "pair");
+    element.setAttribute("compose", "grouped");
+    await flush();
+    expect(element.innerHTML).toContain(`class="group"`);
+    expect(element.innerHTML).toContain(">digit</text>");
+  });
+
+  it("surfaces a choo-choo-error on an invalid compose value", async () => {
+    const received: Error[] = [];
+    element.addEventListener("choo-choo-error", (event) => {
+      received.push((event as CustomEvent<{ error: Error }>).detail.error);
+    });
+    element.parser = ebnfParser;
+    element.setAttribute("source", `a = "x";`);
+    element.setAttribute("compose", "maybe");
+    await flush();
+    expect(received).toHaveLength(1);
+    expect(received[0]?.message).toMatch(/compose must be/);
+  });
+
   it("clears the element when source and grammar are both absent", async () => {
     element.innerHTML = "<span>placeholder</span>";
     element.parser = ebnfParser;

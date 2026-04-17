@@ -39,3 +39,6 @@ export {
 
 export { render } from "./render.js";
 export type { RenderOptions } from "./render.js";
+
+export { composeRule } from "./composition.js";
+export type { ComposeMode } from "./composition.js";

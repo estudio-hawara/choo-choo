@@ -1,19 +1,24 @@
 import {
+  type ComposeMode,
   type Diagram,
   type GrammarParser,
   type RenderOptions,
+  composeRule,
   render,
 } from "@choo-choo/core";
 
 function escapeHtml(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function parseComposeAttribute(raw: string | null): ComposeMode {
+  if (raw === null || raw === "") return "no";
+  if (raw === "no" || raw === "yes" || raw === "grouped") return raw;
+  throw new Error(`<choo-choo>: compose must be "no", "yes" or "grouped", got "${raw}"`);
 }
 
 export class ChooChooElement extends HTMLElement {
-  static observedAttributes = ["source", "grammar", "rule"];
+  static observedAttributes = ["source", "grammar", "rule", "compose"];
   static parserCache = new Map<string, Promise<GrammarParser>>();
 
   #ir: Diagram | undefined;
@@ -82,9 +87,7 @@ export class ChooChooElement extends HTMLElement {
 
       const sourceAttribute = this.getAttribute("source");
       const source =
-        sourceAttribute !== null && sourceAttribute !== ""
-          ? sourceAttribute
-          : this.#capturedSource;
+        sourceAttribute !== null && sourceAttribute !== "" ? sourceAttribute : this.#capturedSource;
 
       if (!source) {
         this.innerHTML = "";
@@ -114,7 +117,8 @@ export class ChooChooElement extends HTMLElement {
         );
       }
 
-      this.#renderDiagram(rule.diagram);
+      const mode = parseComposeAttribute(this.getAttribute("compose"));
+      this.#renderDiagram(composeRule(parsed, rule.name, mode));
     } catch (error) {
       this.#handleError(error);
     }
@@ -146,9 +150,10 @@ export class ChooChooElement extends HTMLElement {
     let cached = ChooChooElement.parserCache.get(id);
     if (!cached) {
       cached = (async () => {
-        const module = (await import(
-          /* @vite-ignore */ `@choo-choo/parser-${id}`
-        )) as Record<string, unknown>;
+        const module = (await import(/* @vite-ignore */ `@choo-choo/parser-${id}`)) as Record<
+          string,
+          unknown
+        >;
         const exported = module[`${id}Parser`] ?? module.default;
         if (
           !exported ||

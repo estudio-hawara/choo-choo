@@ -1,8 +1,10 @@
 import {
+  type ComposeMode,
   type Diagram,
   type GrammarParser,
   type ParsedGrammar,
   type RenderOptions,
+  composeRule,
   render,
 } from "@choo-choo/core";
 
@@ -15,6 +17,7 @@ export type MountOptions =
       source: string;
       parser: GrammarParser;
       rule?: string;
+      compose?: ComposeMode;
       options?: RenderOptions;
     };
 
@@ -42,5 +45,5 @@ function resolveDiagram(options: MountOptions): Diagram {
         : "mount: parsed grammar has no rules",
     );
   }
-  return rule.diagram;
+  return composeRule(parsed, rule.name, options.compose ?? "no");
 }
