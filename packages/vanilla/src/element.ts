@@ -170,3 +170,9 @@ export class ChooChooElement extends HTMLElement {
 if (typeof customElements !== "undefined" && !customElements.get("choo-choo")) {
   customElements.define("choo-choo", ChooChooElement);
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "choo-choo": ChooChooElement;
+  }
+}

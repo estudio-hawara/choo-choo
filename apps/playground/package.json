@@ -1,0 +1,22 @@
+{
+  "name": "playground",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local demo app for choo-choo — manual IR and EBNF paths side by side.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@choo-choo/core": "workspace:*",
+    "@choo-choo/parser-ebnf": "workspace:*",
+    "@choo-choo/vanilla": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>choo-choo — playground</title>
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>choo-choo</h1>
+      <p>Railroad diagrams from EBNF — or from the manual builder.</p>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2>From EBNF source</h2>
+        <p class="hint">
+          Edit the grammar — the diagram for the first rule re-renders as you type.
+        </p>
+
+        <textarea id="ebnf-source" spellcheck="false" autocomplete="off"></textarea>
+
+        <div class="output-wrapper">
+          <choo-choo id="ebnf-output"></choo-choo>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Manual IR via the builder</h2>
+        <p class="hint">
+          The diagram below is constructed with factory calls — no parser involved.
+        </p>
+
+        <pre><code id="manual-code"></code></pre>
+
+        <div class="output-wrapper">
+          <choo-choo id="manual-output"></choo-choo>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <p>
+        Pre-alpha. Specs live in <code>docs/</code>. Architecture: <code>packages/core</code>,
+        <code>parser-utils</code>, <code>parser-ebnf</code>, <code>vanilla</code>.
+      </p>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
