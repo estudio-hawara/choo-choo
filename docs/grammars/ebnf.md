@@ -189,7 +189,7 @@ regex atom = ? any Perl-compatible regular expression ?;
 
 Produces a `special` node with `text = " any Perl-compatible regular expression "` (spaces preserved).
 
-## Out of scope for 0.1
+## Out of scope
 
 Deliberately unimplemented; tracked for later iterations:
 
