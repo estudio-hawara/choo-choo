@@ -2,13 +2,7 @@
   "name": "@choo-choo/parser-utils",
   "version": "0.1.0",
   "description": "Shared lexer primitives for choo-choo grammar parsers: reader, tokenizer, specification, errors.",
-  "keywords": [
-    "railroad",
-    "parser",
-    "tokenizer",
-    "lexer",
-    "reader"
-  ],
+  "keywords": ["railroad", "parser", "tokenizer", "lexer", "reader"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",
   "license": "MIT",
   "homepage": "https://estudio-hawara.github.io/choo-choo",
@@ -31,10 +25,7 @@
       "import": "./src/index.ts"
     }
   },
-  "files": [
-    "dist",
-    "src"
-  ],
+  "files": ["dist", "src"],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

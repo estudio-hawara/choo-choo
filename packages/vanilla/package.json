@@ -32,11 +32,7 @@
     },
     "./styles.css": "./styles.css"
   },
-  "files": [
-    "dist",
-    "src",
-    "styles.css"
-  ],
+  "files": ["dist", "src", "styles.css"],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
