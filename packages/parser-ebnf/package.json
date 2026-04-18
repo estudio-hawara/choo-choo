@@ -1,8 +1,15 @@
 {
   "name": "@choo-choo/parser-ebnf",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "EBNF (ISO/IEC 14977 subset) grammar parser for choo-choo.",
-  "keywords": ["railroad", "railroad-diagram", "ebnf", "iso-14977", "parser", "grammar"],
+  "keywords": [
+    "railroad",
+    "railroad-diagram",
+    "ebnf",
+    "iso-14977",
+    "parser",
+    "grammar"
+  ],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",
   "license": "MIT",
   "homepage": "https://estudio-hawara.github.io/choo-choo",
@@ -25,7 +32,10 @@
       "import": "./src/index.ts"
     }
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
