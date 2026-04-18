@@ -27,11 +27,7 @@ function leafMeasurement(textLength: number): Measurements {
   };
 }
 
-export function measure(
-  node: Node,
-  options: ResolvedOptions,
-  cache: MeasureCache,
-): Measurements {
+export function measure(node: Node, options: ResolvedOptions, cache: MeasureCache): Measurements {
   const cached = cache.get(node);
   if (cached) return cached;
   const measurements = compute(node, options, cache);
@@ -39,11 +35,7 @@ export function measure(
   return measurements;
 }
 
-function compute(
-  node: Node,
-  options: ResolvedOptions,
-  cache: MeasureCache,
-): Measurements {
+function compute(node: Node, options: ResolvedOptions, cache: MeasureCache): Measurements {
   switch (node.kind) {
     case "diagram":
       throw new TypeError("render: Diagram cannot appear inside another node");

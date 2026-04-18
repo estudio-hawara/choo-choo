@@ -1,4 +1,7 @@
-# Development
+---
+title: Development
+description: How Choo Choo is built — spec-driven loop, tooling, and testing strategy.
+---
 
 This document specifies how **Choo Choo** is built.
 
@@ -16,7 +19,7 @@ For non-trivial changes, stage the work so each commit lands a thin vertical sli
 
 ## Milestones
 
-The roadmap in `docs/roadmap/[next-version].md` lists the milestones (M1…M7) and the spec documents each one must produce **before** any code lands. For example, M1 (`@choo-choo/core`) requires `docs/ir.md`, `docs/rendering.md`, and `docs/builder.md` to exist and be reviewed before the package is created.
+The roadmap in `docs/roadmap/[next-version].md` lists the milestones for each release and the spec documents each one must produce **before** any code lands. For example, M1 (`@choo-choo/core`) requires `docs/ir.md`, `docs/rendering.md`, and `docs/builder.md` to exist and be reviewed before the package is created.
 
 ## Tooling
 
@@ -74,4 +77,8 @@ Short, imperative, present tense. Conventional Commits are encouraged (`feat:`, 
 
 ## CI
 
-CI is introduced at M7. Until then, running `pnpm biome check .`, `pnpm -r test`, and `pnpm -r build` locally before merging is the bar.
+Every push and pull request runs Biome, TypeScript, Vitest, and tsup on Node 20 and 22 via GitHub Actions (`.github/workflows/ci.yml`). Locally, the same three commands — `pnpm biome check .`, `pnpm -r typecheck`, `pnpm -r test` — are the bar before opening a PR.
+
+## Releases
+
+Publishing is driven by [Changesets](https://github.com/changesets/changesets). See [Releasing](./releasing.md) for the policy, the workflow, and the checklist before cutting a version.

@@ -3,8 +3,8 @@ import type {
   Comment,
   End,
   Group,
-  NonTerminal,
   Node,
+  NonTerminal,
   Optional,
   Repetition,
   Sequence,
@@ -23,7 +23,7 @@ import {
   measure,
 } from "./measure.js";
 import type { ResolvedOptions } from "./options.js";
-import { escape, formatNumber, sourceAttributes } from "./svg.js";
+import { escapeXml, formatNumber, sourceAttributes } from "./svg.js";
 
 export interface EmitContext {
   options: ResolvedOptions;
@@ -63,11 +63,11 @@ export function emit(node: Node, context: EmitContext): string {
 
 function wrapLink(body: string, href: string | undefined): string {
   if (href === undefined) return body;
-  return `<a xlink:href="${escape(href)}">${body}</a>`;
+  return `<a xlink:href="${escapeXml(href)}">${body}</a>`;
 }
 
 function titleElement(title: string | undefined): string {
-  return title === undefined ? "" : `<title>${escape(title)}</title>`;
+  return title === undefined ? "" : `<title>${escapeXml(title)}</title>`;
 }
 
 function emitStart(node: Start, context: EmitContext): string {
@@ -80,7 +80,7 @@ function emitStart(node: Start, context: EmitContext): string {
   const rail = `<path d="M0 0 h${width}"/>`;
   const label =
     node.label !== undefined
-      ? `<text x="0" y="-15" class="diagram-label">${escape(node.label)}</text>`
+      ? `<text x="0" y="-15" class="diagram-label">${escapeXml(node.label)}</text>`
       : "";
   return `<g class="start"${source}>${bars}${rail}${label}</g>`;
 }
@@ -118,7 +118,7 @@ function emitLeafBox(
       `L${formatNumber(width)} 0 L${formatNumber(width - slant)} ${LEAF_HALF_HEIGHT} ` +
       `H${slant} Z"/>`;
   }
-  const label = `<text x="${formatNumber(width / 2)}" y="5" text-anchor="middle">${escape(text)}</text>`;
+  const label = `<text x="${formatNumber(width / 2)}" y="5" text-anchor="middle">${escapeXml(text)}</text>`;
   const body = `${shape}${label}`;
   const wrapped = wrapLink(body, href);
   return `<g class="${cssClass}"${source}>${titleElement(title)}${wrapped}</g>`;
@@ -164,7 +164,7 @@ function emitComment(node: Comment, context: EmitContext): string {
   const measurements = measure(node, context.options, context.cache);
   const source = sourceAttributes(node, context.options);
   const rail = `<path d="M0 0 h${formatNumber(measurements.width)}"/>`;
-  const label = `<text x="${formatNumber(measurements.width / 2)}" y="5" text-anchor="middle" class="comment-text">${escape(node.text)}</text>`;
+  const label = `<text x="${formatNumber(measurements.width / 2)}" y="5" text-anchor="middle" class="comment-text">${escapeXml(node.text)}</text>`;
   const body = wrapLink(`${rail}${label}`, node.href);
   return `<g class="comment"${source}>${titleElement(node.title)}${body}</g>`;
 }
@@ -180,9 +180,7 @@ function emitSequence(node: Sequence, context: EmitContext): string {
   const parts: string[] = [];
   for (let index = 0; index < node.children.length; index++) {
     if (index > 0) {
-      parts.push(
-        `<path d="M${formatNumber(cursor)} 0 h${formatNumber(SEQUENCE_SPACING)}"/>`,
-      );
+      parts.push(`<path d="M${formatNumber(cursor)} 0 h${formatNumber(SEQUENCE_SPACING)}"/>`);
       cursor += SEQUENCE_SPACING;
     }
     const child = node.children[index];
@@ -380,7 +378,7 @@ function emitGroup(node: Group, context: EmitContext): string {
   const rect = `<rect x="${formatNumber(boxX)}" y="${formatNumber(boxY)}" width="${formatNumber(boxWidth)}" height="${formatNumber(boxHeight)}" class="group-box"/>`;
   const label =
     node.label !== undefined
-      ? `<text x="${formatNumber(GROUP_PADDING_X)}" y="${formatNumber(boxY - 4)}" class="group-label">${escape(node.label)}</text>`
+      ? `<text x="${formatNumber(GROUP_PADDING_X)}" y="${formatNumber(boxY - 4)}" class="group-label">${escapeXml(node.label)}</text>`
       : "";
   return `<g class="group"${source}>${rect}${label}${rail}${childGroup}</g>`;
 }

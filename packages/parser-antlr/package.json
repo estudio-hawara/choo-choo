@@ -2,7 +2,20 @@
   "name": "@choo-choo/parser-antlr",
   "version": "0.0.0",
   "description": "ANTLR4 grammar parser for choo-choo.",
+  "keywords": ["railroad", "railroad-diagram", "antlr", "antlr4", "parser", "grammar"],
+  "author": "Estudio Hawara <carlos.capote@hawara.es>",
+  "license": "MIT",
+  "homepage": "https://estudio-hawara.github.io/choo-choo",
+  "bugs": {
+    "url": "https://github.com/estudio-hawara/choo-choo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/estudio-hawara/choo-choo.git",
+    "directory": "packages/parser-antlr"
+  },
   "type": "module",
+  "sideEffects": false,
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",
@@ -20,6 +33,7 @@
     "typecheck": "tsc --noEmit"
   },
   "publishConfig": {
+    "access": "public",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",

@@ -169,7 +169,7 @@ describe("<choo-choo> events", () => {
       received.push((event as CustomEvent<{ error: Error }>).detail.error);
     });
     element.parser = ebnfParser;
-    element.setAttribute("source", `a = @;`); // tokenizer error
+    element.setAttribute("source", "a = @;"); // tokenizer error
     await flush();
     expect(received).toHaveLength(1);
     expect(element.querySelector(".choo-choo-error")).not.toBeNull();

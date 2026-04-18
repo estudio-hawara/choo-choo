@@ -1,6 +1,6 @@
 import { GrammarSyntaxError, type Token } from "@choo-choo/parser-utils";
 import { describe, expect, it } from "vitest";
-import { createEbnfTokenizer, type EbnfTokenType } from "./tokenizer.js";
+import { type EbnfTokenType, createEbnfTokenizer } from "./tokenizer.js";
 
 function tokenize(source: string): Token<EbnfTokenType>[] {
   const tokenizer = createEbnfTokenizer(source);
@@ -78,12 +78,7 @@ describe("EBNF tokenizer / whitespace and comments", () => {
 
   it("skips block comments, even multi-line", () => {
     const tokens = tokenize(`(* leading *) a (* between\nrule *) = "1";`);
-    expect(tokens.map((token) => token.type)).toEqual([
-      "identifier",
-      "=",
-      "terminal",
-      ";",
-    ]);
+    expect(tokens.map((token) => token.type)).toEqual(["identifier", "=", "terminal", ";"]);
   });
 
   it("tracks line / column correctly after newlines and comments", () => {

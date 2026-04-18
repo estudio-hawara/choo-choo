@@ -2,7 +2,20 @@
   "name": "@choo-choo/react",
   "version": "0.0.0",
   "description": "React binding for choo-choo: the <ChooChoo> component, SSR-safe and hook-free.",
+  "keywords": ["railroad", "railroad-diagram", "syntax-diagram", "react", "svg"],
+  "author": "Estudio Hawara <carlos.capote@hawara.es>",
+  "license": "MIT",
+  "homepage": "https://estudio-hawara.github.io/choo-choo",
+  "bugs": {
+    "url": "https://github.com/estudio-hawara/choo-choo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/estudio-hawara/choo-choo.git",
+    "directory": "packages/react"
+  },
   "type": "module",
+  "sideEffects": ["./styles.css"],
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",
@@ -21,6 +34,7 @@
     "typecheck": "tsc --noEmit"
   },
   "publishConfig": {
+    "access": "public",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",

@@ -68,10 +68,7 @@ class EbnfParser {
       branches.push(this.parseSingleDefinition());
     }
     if (branches.length === 1) return first;
-    return makeChoice(
-      branches,
-      spanOf(branches[0]?.source, branches[branches.length - 1]?.source),
-    );
+    return makeChoice(branches, spanOf(branches[0]?.source, branches[branches.length - 1]?.source));
   }
 
   // single-definition = syntactic-term , { "," , syntactic-term }

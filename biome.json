@@ -9,6 +9,19 @@
       "recommended": true
     }
   },
+  "overrides": [
+    {
+      "include": ["**/*.test.ts", "**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off",
+            "noUnusedTemplateLiteral": "off"
+          }
+        }
+      }
+    }
+  ],
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -17,6 +30,13 @@
   },
   "files": {
     "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.json"],
-    "ignore": ["**/dist/**", "**/node_modules/**", "**/coverage/**"]
+    "ignore": [
+      "**/dist/**",
+      "**/node_modules/**",
+      "**/coverage/**",
+      "**/.astro/**",
+      "**/.changeset/*.md",
+      "pnpm-lock.yaml"
+    ]
   }
 }

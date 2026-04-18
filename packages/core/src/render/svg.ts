@@ -1,7 +1,7 @@
 import type { Node } from "../ir.js";
 import type { ResolvedOptions } from "./options.js";
 
-export function escape(input: string): string {
+export function escapeXml(input: string): string {
   return input
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

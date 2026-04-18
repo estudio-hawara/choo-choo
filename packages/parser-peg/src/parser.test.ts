@@ -188,7 +188,6 @@ describe("PEG parser / lookahead predicates", () => {
   it("wraps !expr in a labelled group", () => {
     const grammar = parse(`r = !"x" .`);
     const child = grammar.rules[0]?.diagram.child as { children: Node[] };
-    // biome-ignore lint/style/noNonNullAssertion: sequence has two children by construction
     expect(stripSource(child.children[0]!)).toEqual({
       kind: "group",
       label: "!",

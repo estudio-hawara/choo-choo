@@ -38,4 +38,4 @@ React, Vue, and Astro ship equivalent components under `@choo-choo/react`, `@cho
 
 ## Try it out
 
-The [playground](https://github.com/anthropics/choo-choo) demo (`apps/playground/` in the repo) lets you type a grammar in EBNF, ANTLR, or PEG and see the rendered diagram update live. Use it to iterate on a grammar before wiring the library into your own app.
+The [playground](https://github.com/estudio-hawara/choo-choo) demo (`apps/playground/` in the repo) lets you type a grammar in EBNF, ANTLR, or PEG and see the rendered diagram update live. Use it to iterate on a grammar before wiring the library into your own app.

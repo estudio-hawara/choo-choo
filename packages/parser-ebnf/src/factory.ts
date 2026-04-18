@@ -1,8 +1,8 @@
 import type {
   Choice,
   Diagram,
-  NonTerminal,
   Node,
+  NonTerminal,
   Optional,
   Repetition,
   Sequence,

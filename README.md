@@ -1,34 +1,63 @@
 # choo-choo
 
-A TypeScript library for railroad diagrams — built by hand or generated from grammars.
+A TypeScript library for railroad diagrams — built by hand or generated from grammars. Ships as a pure SVG renderer with pluggable parsers and first-class bindings for **React**, **Vue**, **Astro**, and **Vanilla JS**.
 
-> **Status: pre-alpha.** The project is being built spec-first. The public API does not exist yet; what you'll find in this repo so far is the specification that will guide implementation.
+Docs: <https://estudio-hawara.github.io/choo-choo>
 
-## What it will do
+## Quick start
 
-- Render railroad (syntax) diagrams as SVG, server-side or client-side.
-- Two construction paths:
-  - **Manual** — compose diagrams in code from primitives (`Sequence`, `Choice`, `Terminal`, `NonTerminal`, `Optional`, `Repetition`, …).
-  - **From a grammar** — hand in a grammar source string and a parser (EBNF, ANTLR or PEG at launch) and get a diagram automatically.
-- First-class bindings for **React**, **Vue**, **Astro**, and **Vanilla JS** (web component + imperative mount).
+Pick a binding and a parser. The shortest path is the `@choo-choo/vanilla` custom element:
+
+```sh
+pnpm add @choo-choo/vanilla @choo-choo/parser-ebnf
+```
+
+```html
+<script type="module">
+  import "@choo-choo/vanilla";
+  import "@choo-choo/vanilla/styles.css";
+  import { ebnfParser } from "@choo-choo/parser-ebnf";
+  document.querySelector("choo-choo").parser = ebnfParser;
+</script>
+
+<choo-choo compose="grouped">
+  digit  = ? 0-9 ?;
+  number = digit , { digit };
+</choo-choo>
+```
+
+Equivalent components exist for every supported framework — see the docs for React, Vue, and Astro.
+
+## Packages
+
+| Package                                                                        | Purpose                                                   |
+|--------------------------------------------------------------------------------|-----------------------------------------------------------|
+| [`@choo-choo/core`](./packages/core)                 | IR, manual builder, and SVG renderer. Zero runtime deps.  |
+| [`@choo-choo/parser-utils`](./packages/parser-utils) | Shared reader / tokenizer primitives for grammar parsers. |
+| [`@choo-choo/parser-ebnf`](./packages/parser-ebnf)   | ISO/IEC 14977 EBNF parser.                                |
+| [`@choo-choo/parser-antlr`](./packages/parser-antlr) | ANTLR4 grammar parser.                                    |
+| [`@choo-choo/parser-peg`](./packages/parser-peg)     | PEG (peggy / PEG.js dialect) parser.                      |
+| [`@choo-choo/vanilla`](./packages/vanilla)           | `<choo-choo>` custom element + imperative `mount()`.      |
+| [`@choo-choo/react`](./packages/react)               | React `<ChooChoo>` component, SSR-safe.                   |
+| [`@choo-choo/vue`](./packages/vue)                   | Vue 3 `<ChooChoo>` component, SSR-safe.                   |
+| [`@choo-choo/astro`](./packages/astro)               | Astro `<ChooChoo>` component, SSR-only.                   |
 
 ## Repository map
 
 - [`docs/architecture.md`](./docs/architecture.md) — target architecture and module boundaries.
 - [`docs/development.md`](./docs/development.md) — development workflow and tooling.
-- [`docs/roadmap/[next-version].md`](./docs/roadmap/) — milestones for each release.
-- [`CLAUDE.md`](./CLAUDE.md) — operating guide for Claude sessions (also a concise human overview).
+- [`docs/contributing.md`](./docs/contributing.md) — how to contribute.
+- [`docs/releasing.md`](./docs/releasing.md) — versioning policy and publish flow.
+- [`docs/roadmap/`](./docs/roadmap/) — milestones for each release.
 
-## Development
+## Inspiration
 
-This project follows a **spec-driven** loop:
+> [!NOTE]
+> This project is an evolution of [Railroad Diagrams](https://github.com/tabatkins/railroad-diagrams) by @tabatkins, with the addition of the (E)BNF parsers that simplify the construction of the diagrams when you already have a defined grammar.
 
-1. Update `README.md` and/or `docs/**` to describe the change.
-2. Implement the change.
-3. Back it with tests.
-
-See [`docs/development.md`](./docs/development.md) for the full workflow, tooling choices, and testing strategy.
+> [!NOTE]
+> I started writing this library while studying the [Parser from scratch](http://dmitrysoshnikov.com/courses/parser-from-scratch/) course from @dmitrysoshnikov, so you may find several similarities with his approach to recursive descent parser. Following his course[s] will definitely help you understanding this codebase.
 
 ## License
 
-MIT.
+[MIT](./LICENSE) © [Estudio Hawara](https://hawara.es).

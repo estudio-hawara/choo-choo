@@ -27,9 +27,7 @@ describe("Specification", () => {
 
   it("returns the first matching rule (order matters)", () => {
     // Without the digit rule first, \w+ would eat '123' as a word.
-    const spec = new Specification<SimpleType>()
-      .add(/^\d+/, "digit")
-      .add(/^\w+/, "word");
+    const spec = new Specification<SimpleType>().add(/^\d+/, "digit").add(/^\w+/, "word");
     expect(spec.match("123abc")).toEqual({ type: "digit", value: "123" });
     expect(spec.match("abc123")).toEqual({ type: "word", value: "abc123" });
   });
