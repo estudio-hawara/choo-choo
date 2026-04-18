@@ -41,8 +41,8 @@ Once a package reaches `1.0.0`, standard semver applies.
 ## Publish requirements
 
 - All packages under `@choo-choo/*` publish with `publishConfig.access = "public"` (they are scoped and would otherwise be private by default).
-- `NPM_TOKEN` must be set as a repository secret. The token needs **publish** permission on the `@choo-choo` scope.
-- `GITHUB_TOKEN` is provided by Actions; `release.yml` uses it to open the Version Packages PR and to create the git tags.
+- **npm authentication uses Trusted Publishers (OIDC).** No long-lived `NPM_TOKEN` is stored in the repository. Each `@choo-choo/*` package is registered on npm with GitHub Actions as its trusted publisher, pinned to this repo and to `release.yml`. The workflow declares `permissions: id-token: write` so npm can exchange the GitHub OIDC token for a short-lived publish token. Adding a new package means registering it as a trusted publisher on npm before the first release.
+- **GitHub write access uses a GitHub App token**, not the default `GITHUB_TOKEN`. The App is installed on the repository and its credentials live in the `RELEASE_BOT_APP_ID` and `RELEASE_BOT_PRIVATE_KEY` secrets. `release.yml` mints a short-lived token from these and uses it to open the Version Packages PR and push git tags. The App token (rather than the default `GITHUB_TOKEN`) is required so that PRs opened by the release workflow trigger `ci.yml` — GitHub suppresses downstream workflow events from actions performed with the default token.
 
 ## Package metadata
 
