@@ -207,15 +207,3 @@ DIGIT  : '0'..'9' ;
 ```
 
 `LETTER`'s child is `special("[a-zA-Z]")`; `DIGIT`'s child is `special("'0'..'9'")`.
-
-## Out of scope
-
-Deliberately unimplemented in 0.1; documented so consumers don't expect them:
-
-- **Modes as structured regions**: `mode X;` is parsed and consumed, but rules declared under a mode land in `ParsedGrammar.rules` **flat**, indistinguishable from top-level lexer rules. A later iteration may group them.
-- **Grammar-header kind tracking**: `parser grammar`, `lexer grammar`, plain `grammar` are all accepted but the parser does not expose which kind was declared.
-- **Import resolution**: `import X, Y;` is consumed but the imported grammars are not fetched or parsed.
-- **Character-class expansion**: charsets render as one `special` node with the literal source text, not as a `choice` of individual terminals. This is deliberate — a `[a-zA-Z0-9_]` railroad with 63 branches is visually useless.
-- **Doc comments as `comment` IR nodes**: `/** … */` is currently dropped like any other comment. A follow-up can promote them to `comment` nodes attached to the next rule.
-- **`EOF` as a distinct end marker**: treated as a plain `nonterminal("EOF")`.
-- **Nested comments**: ANTLR4 itself doesn't support them.

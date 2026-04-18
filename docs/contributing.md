@@ -13,7 +13,7 @@ Thanks for your interest in **Choo Choo**. This page has the rules you need to l
 4. **Changeset.** Run `pnpm changeset` and commit the generated file.
 5. Open a pull request.
 
-No code without a spec. No spec without tests. See [Development](/development/) for the full workflow.
+No code without a spec. No spec without tests. See [Development](./development.md) for the full workflow.
 
 ## Prerequisites
 
@@ -62,11 +62,11 @@ If your change is purely internal (refactor, CI tweak, docs-only with no public-
 pnpm changeset --empty
 ```
 
-See [Releasing](/releasing/) for the full flow from changeset to published npm package.
+See [Releasing](./releasing.md) for the full flow from changeset to published npm package.
 
 ## Where to add things
 
-- A new **grammar parser**? Start with `docs/grammars/<name>.md`, then `packages/parser-<name>`. See [Architecture](/architecture/).
+- A new **grammar parser**? Start with `docs/grammars/<name>.md`, then `packages/parser-<name>`. See [Architecture](./architecture.md).
 - A new **framework binding**? Start with `docs/bindings/<name>.md`, then `packages/<name>`.
 - A new **renderer feature**? Update `docs/rendering.md` and/or `docs/ir.md` first.
 

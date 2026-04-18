@@ -1,9 +1,22 @@
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
+import rehypeRelativeMarkdownLinks from "astro-rehype-relative-markdown-links";
 
 export default defineConfig({
   site: "https://estudio-hawara.github.io",
   base: "/choo-choo",
+  markdown: {
+    rehypePlugins: [
+      [
+        rehypeRelativeMarkdownLinks,
+        {
+          base: "/choo-choo",
+          collectionBase: false,
+          trailingSlash: "always",
+        },
+      ],
+    ],
+  },
   integrations: [
     starlight({
       title: "choo-choo",
@@ -14,10 +27,19 @@ export default defineConfig({
       sidebar: [
         { label: "Introduction", link: "/" },
         {
+          label: "Quickstart",
+          items: [
+            { label: "Overview", link: "/quickstart/" },
+            { label: "Hello world", link: "/quickstart/hello-world/" },
+            { label: "Grammar example", link: "/quickstart/grammar/" },
+            { label: "Where to go next", link: "/quickstart/next-steps/" },
+          ],
+        },
+        {
           label: "Core",
           items: [
             { label: "Architecture", link: "/architecture/" },
-            { label: "IR", link: "/ir/" },
+            { label: "Intermediate representation", link: "/ir/" },
             { label: "Rendering", link: "/rendering/" },
             { label: "Manual builder", link: "/builder/" },
             { label: "Composition", link: "/composition/" },

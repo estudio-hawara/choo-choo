@@ -7,8 +7,9 @@ description: The SSR-safe <ChooChoo> Vue 3 component — defineComponent + rende
 
 ## Install
 
-```
+```bash
 pnpm add @choo-choo/vue vue
+
 # and, when using grammar-driven rendering:
 pnpm add @choo-choo/parser-ebnf
 ```
@@ -138,8 +139,3 @@ The binding does **not** inject any styles by default. Consumers opt in.
 - **No reactive hooks, no effects, no refs.** The component is a pure function of its props. For memoisation, wrap the parent or use `computed` in the caller.
 - **No custom events.** Vue's error-capture API and normal error propagation handle failures; success is implicit.
 - **No template compilation.** `@choo-choo/vue` ships as pre-compiled `h()` calls — no `.vue` files, so consumers without Vue's SFC compiler still work.
-
-## Open questions
-
-- **Event surface for parse errors** — should the component emit `@error` to complement the "throw and let the boundary catch it" flow? Deferred until a real use case appears.
-- **Provide/inject for a shared parser** — could let a tree of diagrams use one parser instance without re-passing as prop. Deferred.

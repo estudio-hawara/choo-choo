@@ -3,7 +3,7 @@ title: Rendering
 description: The pure `render(diagram)` function that turns IR into a self-contained SVG string.
 ---
 
-The renderer is the only component in `@choo-choo/core` that emits SVG. It is a **pure function** that consumes a `Diagram` IR tree (see [`ir.md`](./ir.md)) and returns a self-contained SVG string. It never touches the DOM, depends on no runtime globals, and is safe to call on any JavaScript runtime (Node, Deno, Bun, Cloudflare Workers, browsers).
+The renderer is the only component in `@choo-choo/core` that emits SVG. It is a **pure function** that consumes a `Diagram` [IR](./ir.md) tree and returns a self-contained SVG string. It never touches the DOM, depends on no runtime globals, and is safe to call on any JavaScript runtime (Node, Deno, Bun, Cloudflare Workers, browsers).
 
 ## Contract
 
@@ -21,7 +21,7 @@ function render(diagram: Diagram, options?: RenderOptions): string;
 
 ```ts
 interface RenderOptions {
-  emitSourceData?: boolean; // default false — see § Source location attributes
+  emitSourceData?: boolean; // default false
   verticalSeparation?: number; // vertical gap between stacked lanes, in px. Default: 8
   arcRadius?: number; // radius of route arcs, in px. Default: 10
   diagramPadding?: number; // padding inside the outer <svg> viewBox, in px. Default: 10
@@ -171,9 +171,3 @@ Errors are thrown synchronously. The renderer never partially returns; a thrown 
 - **Grammar parsers** (`docs/grammars/*.md`) produce IR with `source` populated; the renderer honours it under `emitSourceData`.
 - **Framework bindings** (`docs/bindings/*.md`) call `render` internally and pass the returned string to their framework's HTML-insertion mechanism. Bindings do not reach into the renderer's internals.
 - The **stylesheet** `railroad.css` ships alongside `core`. It is *not* inlined into the SVG by the renderer; consumers choose whether to import it.
-
-## Open questions
-
-- **Layout debugging mode** — an option to draw bounding boxes / measurement debug overlays. Deferred; useful when we start having regressions but not needed for 0.1.
-- **Custom text metrics** — text width today is estimated from a fixed character-width heuristic inherited from the legacy project. Real glyph metrics would need a font provider abstraction. Deferred to a later release.
-- **Multi-diagram documents** — emitting several diagrams in one SVG (for a full grammar) is currently the consumer's job (call `render` per rule, stack the results). A `renderGrammar(...)` helper could be offered later if there is demand.

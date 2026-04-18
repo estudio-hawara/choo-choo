@@ -294,9 +294,3 @@ diagram(
 - **Renderer** (`docs/rendering.md`): accepts anything the builder produces without reservations. `render(diagram(...))` is the canonical end-to-end path for hand-built diagrams.
 - **Grammar parsers** (`docs/grammars/*.md`): do not use the builder. They produce IR directly and populate `source`. The two IR-producing paths coexist without depending on each other.
 - **Framework bindings** (`docs/bindings/*.md`): accept IR via `{ ir }` so users can pass the builder's output straight into a component.
-
-## Open questions
-
-- **Fluent chaining** — a `.then(...)` / `.or(...)` API on top of the factories for a more DSL-like feel. Deferred; would live in a separate package if wanted, to keep `core` lean.
-- **Bulk factories** — shortcuts like `terminals("a", "b", "c")` returning an array. Cheap to add later if real usage shows the need; skipped for 0.1.
-- **Source-aware builder variant** — a parallel set of factories that accept and attach a `SourceRange`. Out of scope for 0.1: the spread-then-assign pattern above covers rare cases, and parsers (the high-volume producer) do not use the builder.

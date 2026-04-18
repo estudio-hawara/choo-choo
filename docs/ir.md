@@ -1,18 +1,20 @@
 ---
-title: Intermediate Representation (IR)
+title: Intermediate representation
 description: The flat discriminated-union Node type that parsers produce and the renderer consumes.
 ---
 
-The IR is the single contract between everything that **produces** diagrams (parsers, the manual builder) and everything that **consumes** them (the renderer, bindings). It is a flat discriminated union of pure-data `Node` values — no methods, no SVG awareness, no framework coupling.
+The intermediate representation (IR) is the single contract between everything that **produces** diagrams (parsers, the manual builder) and everything that **consumes** them (the renderer, bindings). 
+
+It is a flat discriminated union of pure-data `Node` values without methods, SVG awareness, or framework coupling.
 
 ## Design rules
 
-1. **Tagged union.** Every node has a `kind` field literal-typed to its variant. Visitors dispatch on `node.kind`.
+1. **Tagged union.** Every node has a `kind` field literal-typed to its variant.
 2. **Pure data.** Nodes carry only data fields; no methods, no hidden references, no lazy getters.
-3. **Tree-shaped.** Nodes form a tree; cycles are not allowed and are not checked at runtime (violations are undefined behaviour).
-4. **Fail loudly on the unknown.** An unrecognised `kind` is a programming error. The renderer and any visitor must throw rather than silently render nothing.
-5. **Minimal surface.** Fields exist only if they affect *structure* or *rendering*. Purely cosmetic concerns belong to renderer options or CSS, not the IR.
-6. **Immutable by convention.** Builders return fresh nodes; visitors do not mutate. The type system does not enforce this (no `readonly` frenzy); the convention is documented and tested.
+3. **Tree-shaped.** Nodes form a tree; cycles are not allowed and are not checked at runtime.
+4. **Fail loudly on the unknown.** An unrecognised `kind` is a programming error.
+5. **Minimal surface.** Fields exist only if they affect *structure* or *rendering*.
+6. **Immutable by convention.** Builders return fresh nodes; visitors do not mutate.
 
 ## The `Node` union
 
@@ -33,9 +35,7 @@ type Node =
   | Skip;
 ```
 
-> Every variant additionally accepts an optional `source?: SourceRange` field — see [§ Source location](#source-location) below. The field is universal and is not repeated in the individual interface blocks.
-
-Summary table:
+> Every variant additionally accepts an optional `source?: SourceRange` field. See [Source location](#source-location) below. The field is universal and is not repeated in the individual interface blocks.
 
 | `kind`         | Shape                            | Role                                                        |
 |----------------|----------------------------------|-------------------------------------------------------------|
@@ -70,7 +70,7 @@ interface SourceRange {
 }
 ```
 
-Responsibilities:
+### Responsibilities
 
 | Who              | Behaviour                                                                                                                                                        |
 |------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -89,9 +89,9 @@ Root of every railroad. Wraps one top-level expression plus optional endpoints.
 ```ts
 interface Diagram {
   kind: "diagram";
-  child: Node;                 // typically a sequence, choice, or any expression node
-  start?: Start;               // defaults to { kind: "start", variant: "simple" }
-  end?: End;                   // defaults to { kind: "end", variant: "simple" }
+  child: Node; // typically a sequence, choice, or any expression node
+  start?: Start; // defaults to { kind: "start", variant: "simple" }
+  end?: End; // defaults to { kind: "end", variant: "simple" }
 }
 ```
 
@@ -103,7 +103,7 @@ Endpoints drawn at the extremities of a diagram.
 interface Start {
   kind: "start";
   variant: "simple" | "complex";
-  label?: string;              // optional rule name drawn above the marker
+  label?: string; // optional rule name drawn above the marker
 }
 interface End {
   kind: "end";
@@ -122,8 +122,8 @@ Literal token rendered as a rounded (stadium) box.
 interface Terminal {
   kind: "terminal";
   text: string;
-  href?: string;               // optional hyperlink wrapping the box
-  title?: string;              // optional <title> tooltip
+  href?: string; // optional hyperlink wrapping the box
+  title?: string; // optional <title> tooltip
 }
 ```
 
@@ -291,7 +291,3 @@ const ir: Diagram = {
 - **The manual builder** exposes factory functions whose return type is `Node`. It does not set `source` — manually constructed IR has no origin in user-authored grammar text. See `docs/builder.md`.
 - **The renderer** consumes a `Diagram` and emits an SVG string. It never mutates the IR. By default it ignores `source`; under `emitSourceData: true` it projects source ranges onto the SVG as `data-source-*` attributes. See `docs/rendering.md`.
 - **Bindings** accept either a `Diagram` (via `{ ir }`) or a `(source, parser)` pair that produces one.
-
-## Open questions
-
-- **ANTLR-style cardinality (`{n,m}`)** — would require `minCount`/`maxCount` on `repetition`. Deferred to [0.1#M5](./roadmap/0.1.md) (`parser-antlr`).

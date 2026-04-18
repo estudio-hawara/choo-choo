@@ -12,8 +12,9 @@ Both are thin wrappers around `render()` from `@choo-choo/core`. They do not bun
 
 ## Install
 
-```
+```bash
 pnpm add @choo-choo/vanilla
+
 # and, when using grammar-driven rendering:
 pnpm add @choo-choo/parser-ebnf
 ```
@@ -226,10 +227,3 @@ The binding does **not** inject any styles by default. Consumers opt in.
 ## Server-side rendering
 
 The binding is client-only. For server rendering, call `render(diagram)` directly from `@choo-choo/core`, send the resulting string to the client, and hydrate with `mount()` (or the element) once in the browser.
-
-## Open questions
-
-- **A `ParsedGrammar` adapter on the element** — rendering every rule of a multi-rule grammar as stacked diagrams. Deferred; users can iterate and call `mount()` per rule.
-- **`MutationObserver` over children** — for reactive updates when `element.textContent = "..."` is reassigned outside of attribute/property paths. Deferred: today the element captures children once on connect and on attribute changes. Will reconsider if use cases appear where callers update textContent directly.
-- **Event detail surface** — should `choo-choo-render` include the resolved `Diagram`? For now it sends only `{ svg }`; if a use case emerges we'll widen.
-- **Shadow DOM** — the element currently uses light DOM so external CSS styles its innards. A `shadow="open"` opt-in could be added later.
