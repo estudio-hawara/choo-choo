@@ -52,8 +52,12 @@ Equivalent components exist for every supported framework — see the docs for R
 
 ## Inspiration
 
+### Railroad Diagrams
+
 > [!NOTE]
 > This project is an evolution of [Railroad Diagrams](https://github.com/tabatkins/railroad-diagrams) by [@tabatkins](https://github.com/tabatkins/), with the addition of the (E)BNF parsers that simplify the construction of the diagrams when you already have a defined grammar.
+
+### Parser from Scratch
 
 > [!NOTE]
 > I started writing this library while studying the [Parser from scratch](http://dmitrysoshnikov.com/courses/parser-from-scratch/) course from [@dmitrysoshnikov](https://github.com/dmitrysoshnikov/), so you may find several similarities with his approach to recursive descent parser. Following his courses will definitely help you understanding this codebase.
