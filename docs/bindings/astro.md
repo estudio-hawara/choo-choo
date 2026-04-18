@@ -7,8 +7,9 @@ description: The SSR-only <ChooChoo> Astro component — renders to inline HTML,
 
 ## Install
 
-```
+```bash
 pnpm add @choo-choo/astro
+
 # and, when using grammar-driven rendering:
 pnpm add @choo-choo/parser-ebnf
 ```
@@ -103,8 +104,3 @@ The rendered SVG carries the same CSS classes documented in [`../rendering.md`](
 - **No client-side hydration.** `<ChooChoo>` is SSR-only by construction.
 - **No dynamic parser loading.** Always pass an explicit `parser`.
 - **No slots.** The component's children would land nowhere useful (the SVG replaces them); slots are not accepted.
-
-## Open questions
-
-- **Per-page error fallback** — deferred. Consumers wrap in their own `try/catch` today.
-- **`<ChooChoo>` as a named export** — deferred. The default-export shape matches every other Astro integration.

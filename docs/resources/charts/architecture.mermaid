@@ -1,0 +1,34 @@
+flowchart TB
+ subgraph parsers["Grammar parsers"]
+    direction TB
+        parser-utils["parser-utils"]
+        parser-ebnf["parser-ebnf"]
+        parser-antlr["parser-antlr"]
+        parser-peg["parser-peg"]
+  end
+ subgraph bindings["Framework bindings"]
+    direction TB
+        react["react"]
+        vue["vue"]
+        astro["astro"]
+        vanilla["vanilla"]
+  end
+ subgraph apps["Apps"]
+    direction TB
+        playground["playground"]
+        docs-site["docs"]
+  end
+    parser-ebnf --> parser-utils & core["<b>@choo-choo/core</b><br>IR · builder · renderer"]
+    parser-antlr --> parser-utils & core
+    parser-peg --> parser-utils & core
+    parser-utils --> core
+    react --> core
+    vue --> core
+    astro --> core
+    vanilla --> core
+    playground -.-> parsers & bindings
+    docs-site -.-> bindings
+
+    style parsers fill:#C8E6C9
+    style bindings fill:#E1BEE7
+    style apps fill:#BBDEFB

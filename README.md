@@ -6,27 +6,25 @@ Docs: <https://estudio-hawara.github.io/choo-choo>
 
 ## Quick start
 
-Pick a binding and a parser. The shortest path is the `@choo-choo/vanilla` custom element:
+End-to-end walkthrough from `pnpm init` to a diagram in a browser: **[docs/quickstart](./docs/quickstart/index.md)**.
 
-```sh
-pnpm add @choo-choo/vanilla @choo-choo/parser-ebnf
-```
+The shortest API shape — vanilla binding with an EBNF grammar — looks like this:
 
 ```html
-<script type="module">
-  import "@choo-choo/vanilla";
-  import "@choo-choo/vanilla/styles.css";
-  import { ebnfParser } from "@choo-choo/parser-ebnf";
-  document.querySelector("choo-choo").parser = ebnfParser;
-</script>
-
 <choo-choo compose="grouped">
   digit  = ? 0-9 ?;
   number = digit , { digit };
 </choo-choo>
 ```
 
-Equivalent components exist for every supported framework — see the docs for React, Vue, and Astro.
+```ts
+import "@choo-choo/vanilla";
+import "@choo-choo/vanilla/styles.css";
+import { ebnfParser } from "@choo-choo/parser-ebnf";
+document.querySelector("choo-choo")!.parser = ebnfParser;
+```
+
+Equivalent components exist for React, Vue, and Astro — see each binding's README.
 
 ## Packages
 
@@ -44,6 +42,7 @@ Equivalent components exist for every supported framework — see the docs for R
 
 ## Repository map
 
+- [`docs/quickstart/`](./docs/quickstart/index.md) — from `pnpm init` to a diagram in a browser.
 - [`docs/architecture.md`](./docs/architecture.md) — target architecture and module boundaries.
 - [`docs/development.md`](./docs/development.md) — development workflow and tooling.
 - [`docs/contributing.md`](./docs/contributing.md) — how to contribute.

@@ -182,11 +182,3 @@ start = "x"
 ```
 
 The leading `{ … }` is a per-parse initializer — scanned and skipped. Grammar has one rule.
-
-## Out of scope
-
-Deliberately unimplemented in 0.1:
-
-- **Ordered-choice ordering in the diagram** — `/` and `|` both render as unordered vertical branches. Consumers read source order.
-- **Case-insensitive semantics** — the `i` flag is preserved textually in the rendered label but not interpreted; we don't case-fold terminals.
-- **Typed rules or imports** — peggy's plugin ecosystem is out of scope.

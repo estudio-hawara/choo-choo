@@ -7,8 +7,9 @@ description: The SSR-safe <ChooChoo> React component — pure function, no hooks
 
 ## Install
 
-```
+```bash
 pnpm add @choo-choo/react
+
 # and, when using grammar-driven rendering:
 pnpm add @choo-choo/parser-ebnf
 ```
@@ -133,8 +134,3 @@ The binding does **not** inject any styles by default. Consumers opt in.
 - **No hooks, no effects, no refs.** The component is a pure function of its props. If you need memoisation, wrap it in `React.memo`.
 - **No custom events.** React error boundaries handle failures; success is implicit.
 - **No ref forwarding.** Add one later if a use case shows up — scope creep otherwise.
-
-## Open questions
-
-- **Event surface for parse errors** — should the component expose an `onError` callback to complement the "throw and let the boundary catch it" flow? Deferred until a real use case appears.
-- **`React.memo`-by-default wrapper** — would skip re-renders when props are referentially equal. Deferred; consumers can apply it themselves cheaply.

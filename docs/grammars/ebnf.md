@@ -191,14 +191,3 @@ regex atom = ? any Perl-compatible regular expression ?;
 ```
 
 Produces a `special` node with `text = " any Perl-compatible regular expression "` (spaces preserved).
-
-## Out of scope
-
-Deliberately unimplemented; tracked for later iterations:
-
-- **Exception (`-`)**: ISO `syntactic factor = [integer, "*"], syntactic primary` with the syntactic-exception operator.
-- **Integer multiplier (`N *`)**: fixed-count repetition.
-- **Empty sequence**: the ISO concept is syntactically absent in our subset; users express optionality with `[…]` instead.
-- **Permissive BNF mode**: accepting `::=` as a synonym for `=` and `<name>` as nonterminal syntax. A follow-up feature on `parser-ebnf` itself, not a separate parser.
-- **Nested comments**: ISO 14977 does not require them; the legacy didn't support them either.
-- **`.` as rule terminator**: only `;` is accepted.
