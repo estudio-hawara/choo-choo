@@ -1,5 +1,15 @@
 # @choo-choo/parser-antlr
 
+## 0.1.1
+
+### Patch Changes
+
+- [#7](https://github.com/estudio-hawara/choo-choo/pull/7) [`a70c639`](https://github.com/estudio-hawara/choo-choo/commit/a70c63981a2a7c354a5dd507f1e29b260ba480c8) Thanks [@elcapo](https://github.com/elcapo)! - Add a package-level README with install instructions, a minimal example, and links to the documentation and repository.
+
+- Updated dependencies [[`a70c639`](https://github.com/estudio-hawara/choo-choo/commit/a70c63981a2a7c354a5dd507f1e29b260ba480c8)]:
+  - @choo-choo/core@0.1.1
+  - @choo-choo/parser-utils@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
