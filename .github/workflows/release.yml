@@ -39,7 +39,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: npm install -g npm@latest
+      - run: npm install -g npm@latest --force
 
       - uses: changesets/action@v1
         with:
