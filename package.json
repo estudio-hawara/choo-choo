@@ -11,7 +11,7 @@
     "check": "biome check .",
     "format": "biome format --write .",
     "changeset": "changeset",
-    "version-packages": "changeset version",
+    "version-packages": "changeset version && biome format --write .",
     "release": "pnpm -r build && changeset publish"
   },
   "devDependencies": {
