@@ -60,6 +60,9 @@ importers:
       '@choo-choo/parser-peg':
         specifier: workspace:*
         version: link:../../packages/parser-peg
+      '@choo-choo/parser-python-peg':
+        specifier: workspace:*
+        version: link:../../packages/parser-python-peg
       '@choo-choo/vanilla':
         specifier: workspace:*
         version: link:../../packages/vanilla
@@ -135,6 +138,25 @@ importers:
         version: 2.1.9(@types/node@24.12.2)(happy-dom@15.11.7)
 
   packages/parser-peg:
+    dependencies:
+      '@choo-choo/core':
+        specifier: workspace:*
+        version: link:../core
+      '@choo-choo/parser-utils':
+        specifier: workspace:*
+        version: link:../parser-utils
+    devDependencies:
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.1(postcss@8.5.10)(typescript@5.9.3)(yaml@2.8.3)
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@24.12.2)(happy-dom@15.11.7)
+
+  packages/parser-python-peg:
     dependencies:
       '@choo-choo/core':
         specifier: workspace:*

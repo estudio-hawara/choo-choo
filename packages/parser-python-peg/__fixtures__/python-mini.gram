@@ -1,0 +1,60 @@
+# A representative subset of Python's PEG meta-grammar.
+#
+# Adapted from https://docs.python.org/3/reference/grammar.html. Rule bodies
+# are simplified where doing so does not change the visual shape of the
+# resulting railroad diagram. The point of this fixture is to exercise every
+# construct the parser supports — leading "|", brackets vs `?`, sep.elem+,
+# lookaheads, soft keywords, the cut operator — without trying to be a
+# faithful copy of CPython's grammar.
+
+# A standalone leaf rule using a soft keyword.
+soft_keyword:
+    | "match"
+    | "case"
+    | "type"
+
+# Pipe-prefixed alternatives, one per line.
+boolean:
+    | 'True'
+    | 'False'
+    | 'None'
+
+# Bracketed optional plus a normal sequence.
+star_targets: star_target ['_' star_target]
+
+# Identifier-or-question form.
+maybe_name: NAME?
+
+# sep.elem+ — separator-aware repetition.
+import_from_as_names: ','.import_from_as_name+
+
+# A zero-or-more separated form, written as [s.e+].
+arguments: [','.argument+]
+
+# Lookaheads (positive and negative) plus a cut operator.
+for_stmt:
+    | 'for' star_targets 'in' ~ star_expressions ':' block
+
+# Negative lookahead — soft keyword in lookahead position.
+pattern_capture_target: !"_" NAME !'(' !'='
+
+# Eager parse — used by pegen for forced commit. We render it like
+# positive lookahead with the && label.
+eager_demo: &&'class' NAME
+
+# Mixed group, repetition, and choice.
+expression:
+    | disjunction 'if' disjunction 'else' expression
+    | disjunction
+
+disjunction:
+    | conjunction ('or' conjunction)+
+    | conjunction
+
+conjunction:
+    | inversion ('and' inversion)+
+    | inversion
+
+inversion:
+    | 'not' inversion
+    | comparison

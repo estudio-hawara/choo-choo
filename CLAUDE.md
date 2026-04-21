@@ -36,6 +36,7 @@ packages/
 ├── parser-ebnf/       @choo-choo/parser-ebnf
 ├── parser-antlr/      @choo-choo/parser-antlr
 ├── parser-peg/        @choo-choo/parser-peg
+├── parser-python-peg/ @choo-choo/parser-python-peg
 ├── react/             @choo-choo/react
 ├── vue/               @choo-choo/vue
 ├── astro/             @choo-choo/astro
