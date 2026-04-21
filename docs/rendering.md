@@ -62,11 +62,22 @@ Inside the `<svg>`, the structure is a tree of nested `<g>` groups, one per IR n
 | `group`       | `group`            |
 | `skip`        | `skip`             |
 
-Groups nest according to the IR tree. Children appear as children in document order. This makes it trivial to:
+Groups nest according to the IR tree. This makes it trivial to:
 
 - style a diagram with CSS (`.choo-choo .terminal rect { … }`),
 - query specific parts in tests (`.querySelector(".choo-choo .choice .terminal")`),
 - map SVG fragments back to IR nodes by position in the tree.
+
+### Paint order: rails first, boxes last
+
+SVG has no z-index; later elements paint over earlier ones. To keep connecting rails from overlapping the borders of the boxes they plug into, every node emits its SVG as **two layers**:
+
+- **rails** — the horizontal stubs, s-curves and loop arcs that connect nodes.
+- **boxes** — the shapes (`<rect>`, hexagon `<path>`, group-box, start/end bars) and the text labels.
+
+At the diagram level, the renderer concatenates *all* rails across the whole tree, and then *all* boxes. The result is a deterministic two-layer document: the entire rail network paints first, then every box paints on top of it. Cross-node overlaps (e.g. an `end` stub meeting the right edge of a `terminal`) therefore always render as box-on-top-of-rail, never the other way around.
+
+Each IR node contributes at most two `<g class="kind">` wrappers — one in the rails layer, one in the boxes layer. A wrapper is omitted when that layer is empty (e.g. `terminal` has no rails of its own, so it appears only in the boxes layer). Source-data attributes, when enabled, are emitted on both wrappers so that a node can be recovered from either layer.
 
 ## Sizing
 

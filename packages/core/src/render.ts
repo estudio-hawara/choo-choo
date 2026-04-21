@@ -1,5 +1,5 @@
 import type { Diagram, End, Start } from "./ir.js";
-import { emit } from "./render/emit.js";
+import { emit, translateLayers } from "./render/emit.js";
 import { type MeasureCache, measure } from "./render/measure.js";
 import { type RenderOptions, resolveOptions } from "./render/options.js";
 import { formatNumber, sourceAttributes } from "./render/svg.js";
@@ -36,17 +36,20 @@ export function render(diagram: Diagram, options?: RenderOptions): string {
   const railY = padding + up;
 
   const context = { options: resolvedOptions, cache };
-  const startSvg = translateGroup(emit(startNode, context), padding, railY);
-  const childSvg = translateGroup(
+  const startLayers = translateLayers(emit(startNode, context), padding, railY);
+  const childLayers = translateLayers(
     emit(diagram.child, context),
     padding + startMeasurement.width,
     railY,
   );
-  const endSvg = translateGroup(
+  const endLayers = translateLayers(
     emit(endNode, context),
     padding + startMeasurement.width + childMeasurement.width,
     railY,
   );
+
+  const allRails = `${startLayers.rails}${childLayers.rails}${endLayers.rails}`;
+  const allBoxes = `${startLayers.boxes}${childLayers.boxes}${endLayers.boxes}`;
 
   const diagramSource = sourceAttributes(diagram, resolvedOptions);
   const sizeAttributes =
@@ -54,9 +57,5 @@ export function render(diagram: Diagram, options?: RenderOptions): string {
       ? ` width="100%"`
       : ` width="${formatNumber(totalWidth)}" height="${formatNumber(totalHeight)}"`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="choo-choo" viewBox="0 0 ${formatNumber(totalWidth)} ${formatNumber(totalHeight)}"${sizeAttributes}><g class="diagram"${diagramSource}>${startSvg}${childSvg}${endSvg}</g></svg>`;
-}
-
-function translateGroup(childSvg: string, x: number, y: number): string {
-  return `<g transform="translate(${formatNumber(x)} ${formatNumber(y)})">${childSvg}</g>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="choo-choo" viewBox="0 0 ${formatNumber(totalWidth)} ${formatNumber(totalHeight)}"${sizeAttributes}><g class="diagram"${diagramSource}>${allRails}${allBoxes}</g></svg>`;
 }
