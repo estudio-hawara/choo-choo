@@ -50,7 +50,8 @@ export default defineConfig({
           items: [
             { label: "EBNF", link: "/grammars/ebnf/" },
             { label: "ANTLR", link: "/grammars/antlr/" },
-            { label: "PEG", link: "/grammars/peg/" },
+            { label: "PEG (peggy)", link: "/grammars/peg/" },
+            { label: "Python PEG (pegen)", link: "/grammars/python-peg/" },
           ],
         },
         {

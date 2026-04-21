@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/parser-python-peg",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "Python PEG (pegen dialect) grammar parser for choo-choo.",
   "keywords": ["railroad", "railroad-diagram", "python", "peg", "pegen", "parser", "grammar"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",
