@@ -14,7 +14,7 @@
 .choo-choo path {
   fill: none;
   stroke: #444;
-  stroke-width: 1;
+  stroke-width: 3;
 }
 
 .choo-choo text {
@@ -24,16 +24,17 @@
 .choo-choo .terminal rect {
   fill: hsl(200 80% 94%);
   stroke: hsl(200 60% 40%);
+  stroke-width: 2;
 }
 
 .choo-choo .non-terminal rect {
-  fill: hsl(40 80% 94%);
-  stroke: hsl(40 60% 40%);
+  fill: hsl(50, 74%, 94%);
+  stroke: hsl(51, 91%, 50%);
 }
 
 .choo-choo .special path {
   fill: hsl(280 60% 94%);
-  stroke: hsl(280 60% 40%);
+  stroke: hsl(258, 40%, 69%);
 }
 
 .choo-choo .comment text,
