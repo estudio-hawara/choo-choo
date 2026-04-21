@@ -162,6 +162,50 @@ describe("render / per-kind snapshots", () => {
   });
 });
 
+describe("render / choiceAlignment", () => {
+  it("equal-width branches render identically to the default", () => {
+    const ir = diagram(choice(terminal("a"), terminal("b")));
+    expect(render(ir, { choiceAlignment: "center" })).toBe(render(ir));
+  });
+
+  it("centers a narrow off-rail branch (normal is wider)", () => {
+    // Mirrors the `number | ( expression )` case from the playground:
+    // normal branch is the wider one, so the narrow top branch gets centered.
+    expect(
+      render(
+        diagram(
+          choice(
+            { normal: 1 },
+            terminal("number"),
+            sequence(terminal("("), nonTerminal("expression"), terminal(")")),
+          ),
+        ),
+        { choiceAlignment: "center" },
+      ),
+    ).toMatchInlineSnapshot(
+      `"<svg xmlns="http://www.w3.org/2000/svg" class="choo-choo" viewBox="0 0 276 72" width="276" height="72"><g class="diagram"><g transform="translate(10 51)"><g class="start"><path d="M0 -10 v20"/><path d="M0 0 h20"/></g></g><g transform="translate(30 51)"><g class="choice"><path d="M0 0 a10 10 0 0 0 10 -10 v-10 a10 10 0 0 1 10 -10"/><path d="M20 -30 h54"/><g transform="translate(74 -30)"><g class="terminal"><rect x="0" y="-11" width="68" height="22" rx="10" ry="10"/><text x="34" y="5" text-anchor="middle">number</text></g></g><path d="M142 -30 h54"/><path d="M196 -30 a10 10 0 0 1 10 10 v10 a10 10 0 0 0 10 10"/><path d="M0 0 h20"/><g transform="translate(20 0)"><g class="sequence"><g transform="translate(0 0)"><g class="terminal"><rect x="0" y="-11" width="28" height="22" rx="10" ry="10"/><text x="14" y="5" text-anchor="middle">(</text></g></g><path d="M28 0 h10"/><g transform="translate(38 0)"><g class="non-terminal"><rect x="0" y="-11" width="100" height="22"/><text x="50" y="5" text-anchor="middle">expression</text></g></g><path d="M138 0 h10"/><g transform="translate(148 0)"><g class="terminal"><rect x="0" y="-11" width="28" height="22" rx="10" ry="10"/><text x="14" y="5" text-anchor="middle">)</text></g></g></g></g><path d="M196 0 h20"/></g></g><g transform="translate(246 51)"><g class="end"><path d="M0 0 h20"/><path d="M20 -10 v20"/></g></g></g></svg>"`,
+    );
+  });
+
+  it("centers the normal branch when it is narrower than the others", () => {
+    expect(
+      render(diagram(choice({ normal: 0 }, terminal("a"), terminal("bbbb"))), {
+        choiceAlignment: "center",
+      }),
+    ).toMatchInlineSnapshot(
+      `"<svg xmlns="http://www.w3.org/2000/svg" class="choo-choo" viewBox="0 0 152 72" width="152" height="72"><g class="diagram"><g transform="translate(10 21)"><g class="start"><path d="M0 -10 v20"/><path d="M0 0 h20"/></g></g><g transform="translate(30 21)"><g class="choice"><path d="M0 0 h32"/><g transform="translate(32 0)"><g class="terminal"><rect x="0" y="-11" width="28" height="22" rx="10" ry="10"/><text x="14" y="5" text-anchor="middle">a</text></g></g><path d="M60 0 h32"/><path d="M0 0 a10 10 0 0 1 10 10 v10 a10 10 0 0 0 10 10"/><g transform="translate(20 30)"><g class="terminal"><rect x="0" y="-11" width="52" height="22" rx="10" ry="10"/><text x="26" y="5" text-anchor="middle">bbbb</text></g></g><path d="M72 30 a10 10 0 0 0 10 -10 v-10 a10 10 0 0 1 10 -10"/></g></g><g transform="translate(122 21)"><g class="end"><path d="M0 0 h20"/><path d="M20 -10 v20"/></g></g></g></svg>"`,
+    );
+  });
+
+  it("with left alignment (default) the narrow branch stays left-aligned", () => {
+    expect(
+      render(diagram(choice({ normal: 0 }, terminal("a"), terminal("bbbb")))),
+    ).toMatchInlineSnapshot(
+      `"<svg xmlns="http://www.w3.org/2000/svg" class="choo-choo" viewBox="0 0 152 72" width="152" height="72"><g class="diagram"><g transform="translate(10 21)"><g class="start"><path d="M0 -10 v20"/><path d="M0 0 h20"/></g></g><g transform="translate(30 21)"><g class="choice"><path d="M0 0 h20"/><g transform="translate(20 0)"><g class="terminal"><rect x="0" y="-11" width="28" height="22" rx="10" ry="10"/><text x="14" y="5" text-anchor="middle">a</text></g></g><path d="M48 0 h44"/><path d="M0 0 a10 10 0 0 1 10 10 v10 a10 10 0 0 0 10 10"/><g transform="translate(20 30)"><g class="terminal"><rect x="0" y="-11" width="52" height="22" rx="10" ry="10"/><text x="26" y="5" text-anchor="middle">bbbb</text></g></g><path d="M72 30 a10 10 0 0 0 10 -10 v-10 a10 10 0 0 1 10 -10"/></g></g><g transform="translate(122 21)"><g class="end"><path d="M0 0 h20"/><path d="M20 -10 v20"/></g></g></g></svg>"`,
+    );
+  });
+});
+
 describe("render / emitSourceData", () => {
   const ranged: Node = {
     kind: "terminal",
