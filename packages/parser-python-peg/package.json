@@ -1,0 +1,57 @@
+{
+  "name": "@choo-choo/parser-python-peg",
+  "version": "0.1.0",
+  "description": "Python PEG (pegen dialect) grammar parser for choo-choo.",
+  "keywords": ["railroad", "railroad-diagram", "python", "peg", "pegen", "parser", "grammar"],
+  "author": "Estudio Hawara <carlos.capote@hawara.es>",
+  "license": "MIT",
+  "homepage": "https://estudio-hawara.github.io/choo-choo",
+  "bugs": {
+    "url": "https://github.com/estudio-hawara/choo-choo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/estudio-hawara/choo-choo.git",
+    "directory": "packages/parser-python-peg"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      }
+    }
+  },
+  "dependencies": {
+    "@choo-choo/core": "workspace:*",
+    "@choo-choo/parser-utils": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

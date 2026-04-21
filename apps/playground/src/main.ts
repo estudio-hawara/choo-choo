@@ -2,12 +2,13 @@ import type { GrammarParser } from "@choo-choo/core";
 import { antlrParser } from "@choo-choo/parser-antlr";
 import { ebnfParser } from "@choo-choo/parser-ebnf";
 import { pegParser } from "@choo-choo/parser-peg";
+import { pythonPegParser } from "@choo-choo/parser-python-peg";
 import "@choo-choo/vanilla";
 import type { ChooChooElement } from "@choo-choo/vanilla";
 import "@choo-choo/vanilla/styles.css";
 import "./style.css";
 
-type GrammarId = "ebnf" | "antlr" | "peg";
+type GrammarId = "ebnf" | "antlr" | "peg" | "python-peg";
 
 const DEFAULT_SOURCES: Record<GrammarId, string> = {
   ebnf: `(* Arithmetic expressions — edit me. *)
@@ -34,12 +35,29 @@ factor = number / "(" expr ")"
 term   = factor (("*" / "/") factor)*
 expr   = term (("+" / "-") term)*
 `,
+  "python-peg": `# Python's PEG dialect — edit me. See docs.python.org/3/reference/grammar.html.
+boolean:
+    | 'True'
+    | 'False'
+    | 'None'
+
+import_from_as_names: ','.import_from_as_name+
+
+expression:
+    | disjunction 'if' disjunction 'else' expression
+    | disjunction
+
+disjunction:
+    | conjunction ('or' conjunction)+
+    | conjunction
+`,
 };
 
 const PARSERS: Record<GrammarId, GrammarParser> = {
   ebnf: ebnfParser,
   antlr: antlrParser,
   peg: pegParser,
+  "python-peg": pythonPegParser,
 };
 
 interface PlaygroundElements {
