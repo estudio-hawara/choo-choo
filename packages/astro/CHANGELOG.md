@@ -1,5 +1,12 @@
 # @choo-choo/astro
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [[`6afe0b3`](https://github.com/estudio-hawara/choo-choo/commit/6afe0b33b2dac86dda3b1aa92bb46749fffd5222)]:
+  - @choo-choo/core@0.2.1
+
 ## 0.1.2
 
 ### Patch Changes
