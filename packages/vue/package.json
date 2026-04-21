@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/vue",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Vue 3 binding for choo-choo: the <ChooChoo> component, SSR-safe and hook-free.",
   "keywords": ["railroad", "railroad-diagram", "syntax-diagram", "vue", "vue3", "svg"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",

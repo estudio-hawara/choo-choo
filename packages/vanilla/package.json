@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/vanilla",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Vanilla JS binding for choo-choo: the <choo-choo> custom element and an imperative mount() helper.",
   "keywords": [
     "railroad",

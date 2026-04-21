@@ -1,5 +1,12 @@
 # @choo-choo/parser-utils
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`5b72ad0`](https://github.com/estudio-hawara/choo-choo/commit/5b72ad02438c8513b901bc947c601b6b85e656d5)]:
+  - @choo-choo/core@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

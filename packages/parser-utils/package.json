@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/parser-utils",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Shared lexer primitives for choo-choo grammar parsers: reader, tokenizer, specification, errors.",
   "keywords": ["railroad", "parser", "tokenizer", "lexer", "reader"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",

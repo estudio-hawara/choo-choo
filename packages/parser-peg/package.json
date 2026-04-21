@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/parser-peg",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "PEG (peggy / PEG.js dialect) grammar parser for choo-choo.",
   "keywords": ["railroad", "railroad-diagram", "peg", "peggy", "parser", "grammar"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",

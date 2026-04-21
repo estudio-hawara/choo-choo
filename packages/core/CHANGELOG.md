@@ -1,5 +1,11 @@
 # @choo-choo/core
 
+## 0.2.0
+
+### Minor Changes
+
+- [#16](https://github.com/estudio-hawara/choo-choo/pull/16) [`5b72ad0`](https://github.com/estudio-hawara/choo-choo/commit/5b72ad02438c8513b901bc947c601b6b85e656d5) Thanks [@elcapo](https://github.com/elcapo)! - add an option to allow centering choices
+
 ## 0.1.1
 
 ### Patch Changes
