@@ -30,7 +30,17 @@ export interface EmitContext {
   cache: MeasureCache;
 }
 
-export function emit(node: Node, context: EmitContext): string {
+/**
+ * Every node emits its SVG as two layers. At the diagram level the renderer
+ * concatenates `rails` across the whole tree, then `boxes`, so the full rail
+ * network paints first and every box paints on top of it.
+ */
+export interface EmitLayers {
+  rails: string;
+  boxes: string;
+}
+
+export function emit(node: Node, context: EmitContext): EmitLayers {
   switch (node.kind) {
     case "diagram":
       throw new TypeError("render: Diagram cannot appear inside another node");
@@ -61,6 +71,21 @@ export function emit(node: Node, context: EmitContext): string {
   }
 }
 
+export function translateLayers(layers: EmitLayers, x: number, y: number): EmitLayers {
+  const transform = `transform="translate(${formatNumber(x)} ${formatNumber(y)})"`;
+  return {
+    rails: layers.rails ? `<g ${transform}>${layers.rails}</g>` : "",
+    boxes: layers.boxes ? `<g ${transform}>${layers.boxes}</g>` : "",
+  };
+}
+
+function wrapClass(cssClass: string, source: string, rails: string, boxes: string): EmitLayers {
+  return {
+    rails: rails ? `<g class="${cssClass}"${source}>${rails}</g>` : "",
+    boxes: boxes ? `<g class="${cssClass}"${source}>${boxes}</g>` : "",
+  };
+}
+
 function wrapLink(body: string, href: string | undefined): string {
   if (href === undefined) return body;
   return `<a xlink:href="${escapeXml(href)}">${body}</a>`;
@@ -70,7 +95,7 @@ function titleElement(title: string | undefined): string {
   return title === undefined ? "" : `<title>${escapeXml(title)}</title>`;
 }
 
-function emitStart(node: Start, context: EmitContext): string {
+function emitStart(node: Start, context: EmitContext): EmitLayers {
   const width = 20;
   const source = sourceAttributes(node, context.options);
   const bars =
@@ -82,10 +107,10 @@ function emitStart(node: Start, context: EmitContext): string {
     node.label !== undefined
       ? `<text x="0" y="-15" class="diagram-label">${escapeXml(node.label)}</text>`
       : "";
-  return `<g class="start"${source}>${bars}${rail}${label}</g>`;
+  return wrapClass("start", source, rail, `${bars}${label}`);
 }
 
-function emitEnd(node: End, context: EmitContext): string {
+function emitEnd(node: End, context: EmitContext): EmitLayers {
   const width = 20;
   const source = sourceAttributes(node, context.options);
   const rail = `<path d="M0 0 h${width}"/>`;
@@ -93,7 +118,7 @@ function emitEnd(node: End, context: EmitContext): string {
     node.variant === "complex"
       ? `<path d="M${width} -10 v20"/><path d="M${width - 5} -10 v20"/>`
       : `<path d="M${width} -10 v20"/>`;
-  return `<g class="end"${source}>${rail}${bars}</g>`;
+  return wrapClass("end", source, rail, bars);
 }
 
 function emitLeafBox(
@@ -103,7 +128,7 @@ function emitLeafBox(
   href: string | undefined,
   title: string | undefined,
   source: string,
-): string {
+): EmitLayers {
   const height = LEAF_HALF_HEIGHT * 2;
   const top = -LEAF_HALF_HEIGHT;
   let shape: string;
@@ -119,12 +144,11 @@ function emitLeafBox(
       `H${slant} Z"/>`;
   }
   const label = `<text x="${formatNumber(width / 2)}" y="5" text-anchor="middle">${escapeXml(text)}</text>`;
-  const body = `${shape}${label}`;
-  const wrapped = wrapLink(body, href);
-  return `<g class="${cssClass}"${source}>${titleElement(title)}${wrapped}</g>`;
+  const body = `${titleElement(title)}${wrapLink(`${shape}${label}`, href)}`;
+  return wrapClass(cssClass, source, "", body);
 }
 
-function emitTerminal(node: Terminal, context: EmitContext): string {
+function emitTerminal(node: Terminal, context: EmitContext): EmitLayers {
   const measurements = measure(node, context.options, context.cache);
   return emitLeafBox(
     "terminal",
@@ -136,7 +160,7 @@ function emitTerminal(node: Terminal, context: EmitContext): string {
   );
 }
 
-function emitNonTerminal(node: NonTerminal, context: EmitContext): string {
+function emitNonTerminal(node: NonTerminal, context: EmitContext): EmitLayers {
   const measurements = measure(node, context.options, context.cache);
   return emitLeafBox(
     "non-terminal",
@@ -148,7 +172,7 @@ function emitNonTerminal(node: NonTerminal, context: EmitContext): string {
   );
 }
 
-function emitSpecial(node: Special, context: EmitContext): string {
+function emitSpecial(node: Special, context: EmitContext): EmitLayers {
   const measurements = measure(node, context.options, context.cache);
   return emitLeafBox(
     "special",
@@ -160,36 +184,39 @@ function emitSpecial(node: Special, context: EmitContext): string {
   );
 }
 
-function emitComment(node: Comment, context: EmitContext): string {
+function emitComment(node: Comment, context: EmitContext): EmitLayers {
   const measurements = measure(node, context.options, context.cache);
   const source = sourceAttributes(node, context.options);
   const rail = `<path d="M0 0 h${formatNumber(measurements.width)}"/>`;
   const label = `<text x="${formatNumber(measurements.width / 2)}" y="5" text-anchor="middle" class="comment-text">${escapeXml(node.text)}</text>`;
-  const body = wrapLink(`${rail}${label}`, node.href);
-  return `<g class="comment"${source}>${titleElement(node.title)}${body}</g>`;
+  const railsBody = `${titleElement(node.title)}${wrapLink(rail, node.href)}`;
+  const boxesBody = `${titleElement(node.title)}${wrapLink(label, node.href)}`;
+  return wrapClass("comment", source, railsBody, boxesBody);
 }
 
-function emitSkip(node: Skip, context: EmitContext): string {
+function emitSkip(node: Skip, context: EmitContext): EmitLayers {
   const source = sourceAttributes(node, context.options);
-  return `<g class="skip"${source}></g>`;
+  return { rails: `<g class="skip"${source}></g>`, boxes: "" };
 }
 
-function emitSequence(node: Sequence, context: EmitContext): string {
+function emitSequence(node: Sequence, context: EmitContext): EmitLayers {
   const source = sourceAttributes(node, context.options);
   let cursor = 0;
-  const parts: string[] = [];
+  const rails: string[] = [];
+  const boxes: string[] = [];
   for (let index = 0; index < node.children.length; index++) {
     if (index > 0) {
-      parts.push(`<path d="M${formatNumber(cursor)} 0 h${formatNumber(SEQUENCE_SPACING)}"/>`);
+      rails.push(`<path d="M${formatNumber(cursor)} 0 h${formatNumber(SEQUENCE_SPACING)}"/>`);
       cursor += SEQUENCE_SPACING;
     }
     const child = node.children[index];
     if (!child) throw new Error("unreachable");
-    const childSvg = emit(child, context);
-    parts.push(`<g transform="translate(${formatNumber(cursor)} 0)">${childSvg}</g>`);
+    const childLayers = translateLayers(emit(child, context), cursor, 0);
+    rails.push(childLayers.rails);
+    boxes.push(childLayers.boxes);
     cursor += measure(child, context.options, context.cache).width;
   }
-  return `<g class="sequence"${source}>${parts.join("")}</g>`;
+  return wrapClass("sequence", source, rails.join(""), boxes.join(""));
 }
 
 function computeChoiceOffsets(
@@ -248,7 +275,7 @@ function sCurveTailToZero(currentOffset: number, arcRadius: number): string {
   );
 }
 
-function emitChoice(node: Choice, context: EmitContext): string {
+function emitChoice(node: Choice, context: EmitContext): EmitLayers {
   const source = sourceAttributes(node, context.options);
   const { arcRadius, verticalSeparation, choiceAlignment } = context.options;
   const childMeasurements = node.children.map((child) =>
@@ -259,7 +286,8 @@ function emitChoice(node: Choice, context: EmitContext): string {
   const totalWidth = innerWidth + 4 * arcRadius;
   const offsets = computeChoiceOffsets(childMeasurements, normalIndex, verticalSeparation);
 
-  const parts: string[] = [];
+  const rails: string[] = [];
+  const boxes: string[] = [];
   const entryX = 2 * arcRadius;
   const exitX = totalWidth - 2 * arcRadius;
 
@@ -277,39 +305,38 @@ function emitChoice(node: Choice, context: EmitContext): string {
     const childRight = childLeft + childMeasurement.width;
 
     if (index === normalIndex) {
-      parts.push(`<path d="M0 0 h${formatNumber(childLeft)}"/>`);
+      rails.push(`<path d="M0 0 h${formatNumber(childLeft)}"/>`);
     } else {
-      parts.push(`<path d="${sCurve(0, 0, childOffset, arcRadius)}"/>`);
+      rails.push(`<path d="${sCurve(0, 0, childOffset, arcRadius)}"/>`);
       if (leftPadding > 0) {
-        parts.push(
+        rails.push(
           `<path d="M${formatNumber(entryX)} ${formatNumber(childOffset)} h${formatNumber(leftPadding)}"/>`,
         );
       }
     }
 
-    const childSvg = emit(child, context);
-    parts.push(
-      `<g transform="translate(${formatNumber(childLeft)} ${formatNumber(childOffset)})">${childSvg}</g>`,
-    );
+    const childLayers = translateLayers(emit(child, context), childLeft, childOffset);
+    rails.push(childLayers.rails);
+    boxes.push(childLayers.boxes);
 
     if (index === normalIndex) {
-      parts.push(
+      rails.push(
         `<path d="M${formatNumber(childRight)} 0 h${formatNumber(totalWidth - childRight)}"/>`,
       );
     } else {
       if (rightPadding > 0) {
-        parts.push(
+        rails.push(
           `<path d="M${formatNumber(childRight)} ${formatNumber(childOffset)} h${formatNumber(rightPadding)}"/>`,
         );
       }
-      parts.push(`<path d="${sCurve(exitX, childOffset, -childOffset, arcRadius)}"/>`);
+      rails.push(`<path d="${sCurve(exitX, childOffset, -childOffset, arcRadius)}"/>`);
     }
   }
 
-  return `<g class="choice"${source}>${parts.join("")}</g>`;
+  return wrapClass("choice", source, rails.join(""), boxes.join(""));
 }
 
-function emitOptional(node: Optional, context: EmitContext): string {
+function emitOptional(node: Optional, context: EmitContext): EmitLayers {
   const source = sourceAttributes(node, context.options);
   const { arcRadius, verticalSeparation } = context.options;
   const childMeasurement = measure(node.child, context.options, context.cache);
@@ -326,13 +353,13 @@ function emitOptional(node: Optional, context: EmitContext): string {
     `<path d="${sCurve(0, 0, skipOffset, arcRadius)} ` +
     `H${formatNumber(totalWidth - 2 * arcRadius)} ` +
     `${sCurveTailToZero(skipOffset, arcRadius)}"/>`;
-  const childSvg = emit(node.child, context);
-  const childGroup = `<g transform="translate(${formatNumber(childLeft)} 0)">${childSvg}</g>`;
+  const childLayers = translateLayers(emit(node.child, context), childLeft, 0);
 
-  return `<g class="optional"${source}>${leftRail}${rightRail}${childGroup}${skipPath}</g>`;
+  const rails = `${leftRail}${rightRail}${skipPath}${childLayers.rails}`;
+  return wrapClass("optional", source, rails, childLayers.boxes);
 }
 
-function emitRepetition(node: Repetition, context: EmitContext): string {
+function emitRepetition(node: Repetition, context: EmitContext): EmitLayers {
   const source = sourceAttributes(node, context.options);
   const { arcRadius, verticalSeparation } = context.options;
   const childMeasurement = measure(node.child, context.options, context.cache);
@@ -348,8 +375,7 @@ function emitRepetition(node: Repetition, context: EmitContext): string {
 
   const leftRail = `<path d="M0 0 h${formatNumber(childLeft)}"/>`;
   const rightRail = `<path d="M${formatNumber(childRight)} 0 h${formatNumber(totalWidth - childRight)}"/>`;
-  const childSvg = emit(node.child, context);
-  const childGroup = `<g transform="translate(${formatNumber(childLeft)} 0)">${childSvg}</g>`;
+  const childLayers = translateLayers(emit(node.child, context), childLeft, 0);
 
   const returnPath =
     `<path d="M${formatNumber(childRight)} 0 ` +
@@ -361,31 +387,36 @@ function emitRepetition(node: Repetition, context: EmitContext): string {
     `v-${formatNumber(returnY - 2 * arcRadius)} ` +
     `a${arcRadius} ${arcRadius} 0 0 1 ${arcRadius} -${arcRadius}"/>`;
 
-  let separatorSvg = "";
+  let separatorRails = "";
+  let separatorBoxes = "";
   if (node.separator) {
     const separatorX = separatorCenterX - separatorMeasurement.width / 2;
     const separatorY = returnY;
-    const separatorBody = emit(node.separator, context);
-    separatorSvg = `<g transform="translate(${formatNumber(separatorX)} ${formatNumber(separatorY)})">${separatorBody}</g>`;
+    const separatorLayers = translateLayers(emit(node.separator, context), separatorX, separatorY);
+    separatorRails = separatorLayers.rails;
+    separatorBoxes = separatorLayers.boxes;
   }
 
-  return `<g class="repetition"${source}>${leftRail}${rightRail}${childGroup}${returnPath}${separatorSvg}</g>`;
+  const rails = `${leftRail}${rightRail}${returnPath}${childLayers.rails}${separatorRails}`;
+  const boxes = `${childLayers.boxes}${separatorBoxes}`;
+  return wrapClass("repetition", source, rails, boxes);
 }
 
-function emitGroup(node: Group, context: EmitContext): string {
+function emitGroup(node: Group, context: EmitContext): EmitLayers {
   const source = sourceAttributes(node, context.options);
   const childMeasurement = measure(node.child, context.options, context.cache);
   const boxX = 0;
   const boxY = -(childMeasurement.up + GROUP_PADDING_Y);
   const boxWidth = childMeasurement.width + GROUP_PADDING_X * 2;
   const boxHeight = childMeasurement.up + childMeasurement.down + GROUP_PADDING_Y * 2;
-  const childSvg = emit(node.child, context);
-  const childGroup = `<g transform="translate(${formatNumber(GROUP_PADDING_X)} 0)">${childSvg}</g>`;
+  const childLayers = translateLayers(emit(node.child, context), GROUP_PADDING_X, 0);
   const rail = `<path d="M0 0 h${formatNumber(GROUP_PADDING_X)} M${formatNumber(GROUP_PADDING_X + childMeasurement.width)} 0 h${formatNumber(GROUP_PADDING_X)}"/>`;
   const rect = `<rect x="${formatNumber(boxX)}" y="${formatNumber(boxY)}" width="${formatNumber(boxWidth)}" height="${formatNumber(boxHeight)}" class="group-box"/>`;
   const label =
     node.label !== undefined
       ? `<text x="${formatNumber(GROUP_PADDING_X)}" y="${formatNumber(boxY - 4)}" class="group-label">${escapeXml(node.label)}</text>`
       : "";
-  return `<g class="group"${source}>${rect}${label}${rail}${childGroup}</g>`;
+  const rails = `${rail}${childLayers.rails}`;
+  const boxes = `${rect}${label}${childLayers.boxes}`;
+  return wrapClass("group", source, rails, boxes);
 }
