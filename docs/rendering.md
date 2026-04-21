@@ -26,6 +26,7 @@ interface RenderOptions {
   arcRadius?: number; // radius of route arcs, in px. Default: 10
   diagramPadding?: number; // padding inside the outer <svg> viewBox, in px. Default: 10
   strokeWidth?: number; // stroke-width applied to rails and box outlines, in px. Default: 1
+  choiceAlignment?: "left" | "center"; // horizontal alignment of branches inside a `choice`. Default: "left"
 }
 ```
 
@@ -121,6 +122,13 @@ Children drawn left to right, joined end-to-end on the same rail. No extra glyph
 ### `choice`
 
 Children are stacked vertically and centered on the `normal` index (which sits on the rail). Other children are offset above (smaller indices) and below (larger indices). Incoming and outgoing rails branch from the main rail via arcs — up-arc into the top child, down-arc into the bottom, etc. — and rejoin symmetrically on the right side.
+
+The inner width of a `choice` is fixed to the widest child. Branches narrower than that need extra horizontal rail to reach the rejoin arcs. The `choiceAlignment` option controls where that slack lives:
+
+- **`"left"` (default).** Every branch starts at the same x as the entry arcs, and the slack is a straight rail on the right, just before the exit arc. This matches the `railroad-diagrams` (Tab Atkins) tradition and is the safe choice for diffs against existing output.
+- **`"center"`.** The slack is split evenly between a left stub (after the entry arc) and a right stub (before the exit arc), so each branch — including the `normal` branch on the rail — is centered inside the `choice` box. When the slack is odd, the remainder goes to the right stub so that off-rail branches meet their exit arcs cleanly.
+
+`choiceAlignment` changes only x-coordinates of branches and their connecting stubs. It does not change the measured width, height, or vertical offsets of any node, so a diagram re-rendered with a different alignment preserves its overall bounding box.
 
 ### `optional`
 

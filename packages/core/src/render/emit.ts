@@ -250,7 +250,7 @@ function sCurveTailToZero(currentOffset: number, arcRadius: number): string {
 
 function emitChoice(node: Choice, context: EmitContext): string {
   const source = sourceAttributes(node, context.options);
-  const { arcRadius, verticalSeparation } = context.options;
+  const { arcRadius, verticalSeparation, choiceAlignment } = context.options;
   const childMeasurements = node.children.map((child) =>
     measure(child, context.options, context.cache),
   );
@@ -260,6 +260,8 @@ function emitChoice(node: Choice, context: EmitContext): string {
   const offsets = computeChoiceOffsets(childMeasurements, normalIndex, verticalSeparation);
 
   const parts: string[] = [];
+  const entryX = 2 * arcRadius;
+  const exitX = totalWidth - 2 * arcRadius;
 
   for (let index = 0; index < childMeasurements.length; index++) {
     const childMeasurement = childMeasurements[index];
@@ -268,13 +270,21 @@ function emitChoice(node: Choice, context: EmitContext): string {
     if (!childMeasurement || childOffset === undefined || !child) {
       throw new Error("unreachable");
     }
-    const childLeft = 2 * arcRadius;
+    const slack = innerWidth - childMeasurement.width;
+    const leftPadding = choiceAlignment === "center" ? Math.floor(slack / 2) : 0;
+    const rightPadding = slack - leftPadding;
+    const childLeft = entryX + leftPadding;
     const childRight = childLeft + childMeasurement.width;
 
     if (index === normalIndex) {
       parts.push(`<path d="M0 0 h${formatNumber(childLeft)}"/>`);
     } else {
       parts.push(`<path d="${sCurve(0, 0, childOffset, arcRadius)}"/>`);
+      if (leftPadding > 0) {
+        parts.push(
+          `<path d="M${formatNumber(entryX)} ${formatNumber(childOffset)} h${formatNumber(leftPadding)}"/>`,
+        );
+      }
     }
 
     const childSvg = emit(child, context);
@@ -282,7 +292,6 @@ function emitChoice(node: Choice, context: EmitContext): string {
       `<g transform="translate(${formatNumber(childLeft)} ${formatNumber(childOffset)})">${childSvg}</g>`,
     );
 
-    const rightPadding = innerWidth - childMeasurement.width;
     if (index === normalIndex) {
       parts.push(
         `<path d="M${formatNumber(childRight)} 0 h${formatNumber(totalWidth - childRight)}"/>`,
@@ -293,9 +302,7 @@ function emitChoice(node: Choice, context: EmitContext): string {
           `<path d="M${formatNumber(childRight)} ${formatNumber(childOffset)} h${formatNumber(rightPadding)}"/>`,
         );
       }
-      parts.push(
-        `<path d="${sCurve(childRight + rightPadding, childOffset, -childOffset, arcRadius)}"/>`,
-      );
+      parts.push(`<path d="${sCurve(exitX, childOffset, -childOffset, arcRadius)}"/>`);
     }
   }
 

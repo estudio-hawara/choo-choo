@@ -66,6 +66,7 @@ interface PlaygroundElements {
   grammar: HTMLSelectElement;
   rule: HTMLSelectElement;
   compose: HTMLSelectElement;
+  choiceAlignment: HTMLSelectElement;
 }
 
 function findElements(): PlaygroundElements {
@@ -74,10 +75,11 @@ function findElements(): PlaygroundElements {
   const grammar = document.querySelector<HTMLSelectElement>("#grammar-select");
   const rule = document.querySelector<HTMLSelectElement>("#rule-select");
   const compose = document.querySelector<HTMLSelectElement>("#compose-select");
-  if (!source || !output || !grammar || !rule || !compose) {
+  const choiceAlignment = document.querySelector<HTMLSelectElement>("#choice-alignment-select");
+  if (!source || !output || !grammar || !rule || !compose || !choiceAlignment) {
     throw new Error("playground: required DOM elements not found");
   }
-  return { source, output, grammar, rule, compose };
+  return { source, output, grammar, rule, compose, choiceAlignment };
 }
 
 const els = findElements();
@@ -112,6 +114,10 @@ els.rule.addEventListener("change", () => {
 
 els.compose.addEventListener("change", () => {
   els.output.setAttribute("compose", els.compose.value);
+});
+
+els.choiceAlignment.addEventListener("change", () => {
+  els.output.options = { choiceAlignment: els.choiceAlignment.value as "left" | "center" };
 });
 
 function applyGrammar(id: GrammarId): void {
