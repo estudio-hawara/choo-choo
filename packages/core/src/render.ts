@@ -49,8 +49,12 @@ export function render(diagram: Diagram, options?: RenderOptions): string {
   );
 
   const diagramSource = sourceAttributes(diagram, resolvedOptions);
+  const sizeAttributes =
+    resolvedOptions.sizing === "fluid"
+      ? ` width="100%"`
+      : ` width="${formatNumber(totalWidth)}" height="${formatNumber(totalHeight)}"`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="choo-choo" viewBox="0 0 ${formatNumber(totalWidth)} ${formatNumber(totalHeight)}" width="${formatNumber(totalWidth)}" height="${formatNumber(totalHeight)}"><g class="diagram"${diagramSource}>${startSvg}${childSvg}${endSvg}</g></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="choo-choo" viewBox="0 0 ${formatNumber(totalWidth)} ${formatNumber(totalHeight)}"${sizeAttributes}><g class="diagram"${diagramSource}>${startSvg}${childSvg}${endSvg}</g></svg>`;
 }
 
 function translateGroup(childSvg: string, x: number, y: number): string {

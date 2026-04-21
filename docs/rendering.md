@@ -27,6 +27,7 @@ interface RenderOptions {
   diagramPadding?: number; // padding inside the outer <svg> viewBox, in px. Default: 10
   strokeWidth?: number; // stroke-width applied to rails and box outlines, in px. Default: 1
   choiceAlignment?: "left" | "center"; // horizontal alignment of branches inside a `choice`. Default: "left"
+  sizing?: "intrinsic" | "fluid"; // how the root <svg> advertises its size. Default: "intrinsic"
 }
 ```
 
@@ -40,8 +41,8 @@ The renderer emits exactly one `<svg>` element. Its attributes:
 
 - `xmlns="http://www.w3.org/2000/svg"`
 - `class="choo-choo"` — the root hook for the shipped `railroad.css`.
-- `viewBox="0 0 W H"` where `W` and `H` are the diagram's outer dimensions including `diagramPadding`.
-- `width` and `height` in pixels, matching the `viewBox` extents.
+- `viewBox="0 0 W H"` where `W` and `H` are the diagram's outer dimensions including `diagramPadding`. Always emitted.
+- `width` and `height` — presence and values depend on `options.sizing`. See [Sizing](#sizing) below.
 
 Inside the `<svg>`, the structure is a tree of nested `<g>` groups, one per IR node. Every group carries a CSS class that mirrors the node's `kind`:
 
@@ -66,6 +67,17 @@ Groups nest according to the IR tree. Children appear as children in document or
 - style a diagram with CSS (`.choo-choo .terminal rect { … }`),
 - query specific parts in tests (`.querySelector(".choo-choo .choice .terminal")`),
 - map SVG fragments back to IR nodes by position in the tree.
+
+## Sizing
+
+The `viewBox` is always present, so the internal geometry is resolution-independent. What varies is how the root `<svg>` advertises its size to the host document:
+
+- **`"intrinsic"` (default).** The root tag is `<svg … viewBox="0 0 W H" width="W" height="H">`, with `W` and `H` in pixels. The SVG renders at its natural pixel size regardless of container — the safe choice when the diagram sits inline with prose or when callers want deterministic, pixel-perfect output for screenshots and snapshots.
+- **`"fluid"`.** The root tag is `<svg … viewBox="0 0 W H" width="100%">`, **with no `height` attribute**. Combined with the `viewBox` and the browser's default `preserveAspectRatio="xMidYMid meet"`, the SVG fills the container's width and scales height proportionally. Use this inside flex/grid containers, responsive layouts, or anywhere the diagram should grow with the viewport.
+
+`height` is omitted rather than set to `"100%"` or `"auto"` because `height="auto"` is not a valid SVG attribute, and `height="100%"` against a parent with no explicit height collapses to the 300×150 replaced-element default in most browsers. Omitting it delegates sizing entirely to the aspect ratio derived from the `viewBox`.
+
+`sizing` changes only the root tag's size attributes. The computed dimensions, the `viewBox`, and the inner SVG tree are identical in both modes.
 
 ## Coordinate system and layout model
 

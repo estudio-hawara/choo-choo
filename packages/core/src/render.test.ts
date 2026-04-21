@@ -206,6 +206,39 @@ describe("render / choiceAlignment", () => {
   });
 });
 
+describe("render / sizing", () => {
+  it("intrinsic is the default and matches the bare output", () => {
+    const ir = diagram(terminal("x"));
+    expect(render(ir, { sizing: "intrinsic" })).toBe(render(ir));
+  });
+
+  it('fluid emits width="100%" and omits the height attribute on the root svg', () => {
+    const out = render(diagram(terminal("x")), { sizing: "fluid" });
+    const rootTag = /<svg [^>]*>/.exec(out)?.[0] ?? "";
+    expect(rootTag).toContain(`width="100%"`);
+    expect(rootTag).not.toMatch(/\sheight="/);
+    expect(rootTag).toMatch(/viewBox="0 0 \d+ \d+"/);
+  });
+
+  it("fluid preserves the viewBox and the inner geometry", () => {
+    const ir = diagram(sequence(terminal("a"), terminal("b")));
+    const intrinsic = render(ir);
+    const fluid = render(ir, { sizing: "fluid" });
+
+    const viewBox = /viewBox="[^"]+"/.exec(intrinsic)?.[0];
+    expect(viewBox).toBeDefined();
+    expect(fluid).toContain(viewBox as string);
+
+    expect(fluid.slice(fluid.indexOf("<g "))).toBe(intrinsic.slice(intrinsic.indexOf("<g ")));
+  });
+
+  it("pins the fluid root-tag shape", () => {
+    expect(render(diagram(terminal("if")), { sizing: "fluid" })).toMatchInlineSnapshot(
+      `"<svg xmlns="http://www.w3.org/2000/svg" class="choo-choo" viewBox="0 0 96 42" width="100%"><g class="diagram"><g transform="translate(10 21)"><g class="start"><path d="M0 -10 v20"/><path d="M0 0 h20"/></g></g><g transform="translate(30 21)"><g class="terminal"><rect x="0" y="-11" width="36" height="22" rx="10" ry="10"/><text x="18" y="5" text-anchor="middle">if</text></g></g><g transform="translate(66 21)"><g class="end"><path d="M0 0 h20"/><path d="M20 -10 v20"/></g></g></g></svg>"`,
+    );
+  });
+});
+
 describe("render / emitSourceData", () => {
   const ranged: Node = {
     kind: "terminal",

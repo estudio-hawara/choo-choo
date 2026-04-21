@@ -135,6 +135,11 @@ textarea#source:focus {
   display: inline-block;
 }
 
+.output-wrapper choo-choo:has(svg[width="100%"]) {
+  display: block;
+  width: 100%;
+}
+
 .output-wrapper .choo-choo-error {
   color: #b00020;
   font-family: var(--mono);

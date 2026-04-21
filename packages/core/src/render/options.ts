@@ -1,4 +1,5 @@
 export type ChoiceAlignment = "left" | "center";
+export type Sizing = "intrinsic" | "fluid";
 
 export interface RenderOptions {
   emitSourceData?: boolean;
@@ -7,6 +8,7 @@ export interface RenderOptions {
   diagramPadding?: number;
   strokeWidth?: number;
   choiceAlignment?: ChoiceAlignment;
+  sizing?: Sizing;
 }
 
 export interface ResolvedOptions {
@@ -16,6 +18,7 @@ export interface ResolvedOptions {
   diagramPadding: number;
   strokeWidth: number;
   choiceAlignment: ChoiceAlignment;
+  sizing: Sizing;
 }
 
 export function resolveOptions(opts: RenderOptions | undefined): ResolvedOptions {
@@ -26,5 +29,6 @@ export function resolveOptions(opts: RenderOptions | undefined): ResolvedOptions
     diagramPadding: opts?.diagramPadding ?? 10,
     strokeWidth: opts?.strokeWidth ?? 1,
     choiceAlignment: opts?.choiceAlignment ?? "left",
+    sizing: opts?.sizing ?? "intrinsic",
   };
 }
