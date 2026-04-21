@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "IR, manual builder and SVG renderer for choo-choo railroad diagrams.",
   "keywords": ["railroad", "railroad-diagram", "syntax-diagram", "svg", "ebnf", "ir", "renderer"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",

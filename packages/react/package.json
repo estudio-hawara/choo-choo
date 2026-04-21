@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/react",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "React binding for choo-choo: the <ChooChoo> component, SSR-safe and hook-free.",
   "keywords": ["railroad", "railroad-diagram", "syntax-diagram", "react", "svg"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",
