@@ -67,6 +67,7 @@ interface PlaygroundElements {
   rule: HTMLSelectElement;
   compose: HTMLSelectElement;
   choiceAlignment: HTMLSelectElement;
+  sizing: HTMLSelectElement;
 }
 
 function findElements(): PlaygroundElements {
@@ -76,10 +77,11 @@ function findElements(): PlaygroundElements {
   const rule = document.querySelector<HTMLSelectElement>("#rule-select");
   const compose = document.querySelector<HTMLSelectElement>("#compose-select");
   const choiceAlignment = document.querySelector<HTMLSelectElement>("#choice-alignment-select");
-  if (!source || !output || !grammar || !rule || !compose || !choiceAlignment) {
+  const sizing = document.querySelector<HTMLSelectElement>("#sizing-select");
+  if (!source || !output || !grammar || !rule || !compose || !choiceAlignment || !sizing) {
     throw new Error("playground: required DOM elements not found");
   }
-  return { source, output, grammar, rule, compose, choiceAlignment };
+  return { source, output, grammar, rule, compose, choiceAlignment, sizing };
 }
 
 const els = findElements();
@@ -88,6 +90,7 @@ let currentGrammar: GrammarId = "ebnf";
 applyGrammar(currentGrammar);
 els.compose.value = "grouped";
 els.output.setAttribute("compose", "grouped");
+applyRenderOptions();
 
 els.grammar.addEventListener("change", () => {
   const next = els.grammar.value as GrammarId;
@@ -116,9 +119,15 @@ els.compose.addEventListener("change", () => {
   els.output.setAttribute("compose", els.compose.value);
 });
 
-els.choiceAlignment.addEventListener("change", () => {
-  els.output.options = { choiceAlignment: els.choiceAlignment.value as "left" | "center" };
-});
+els.choiceAlignment.addEventListener("change", applyRenderOptions);
+els.sizing.addEventListener("change", applyRenderOptions);
+
+function applyRenderOptions(): void {
+  els.output.options = {
+    choiceAlignment: els.choiceAlignment.value as "left" | "center",
+    sizing: els.sizing.value as "intrinsic" | "fluid",
+  };
+}
 
 function applyGrammar(id: GrammarId): void {
   els.output.parser = PARSERS[id];
