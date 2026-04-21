@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/parser-antlr",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "ANTLR4 grammar parser for choo-choo.",
   "keywords": ["railroad", "railroad-diagram", "antlr", "antlr4", "parser", "grammar"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",

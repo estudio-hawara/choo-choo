@@ -1,5 +1,11 @@
 # @choo-choo/core
 
+## 0.2.1
+
+### Patch Changes
+
+- [#19](https://github.com/estudio-hawara/choo-choo/pull/19) [`6afe0b3`](https://github.com/estudio-hawara/choo-choo/commit/6afe0b33b2dac86dda3b1aa92bb46749fffd5222) Thanks [@elcapo](https://github.com/elcapo)! - fix rendering order so rails always paint behind boxes
+
 ## 0.2.0
 
 ### Minor Changes
