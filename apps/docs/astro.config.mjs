@@ -64,6 +64,12 @@ export default defineConfig({
           ],
         },
         {
+          label: "Migrations",
+          items: [
+            { label: "Migrating from railroad-diagrams", link: "/migrating-from-legacy/" },
+          ],
+        },
+        {
           label: "Contributing",
           items: [
             { label: "Development", link: "/development/" },
