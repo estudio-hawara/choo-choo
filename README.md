@@ -46,6 +46,7 @@ Equivalent components exist for React, Vue, and Astro — see each binding's REA
 - [`docs/architecture.md`](./docs/architecture.md) — target architecture and module boundaries.
 - [`docs/development.md`](./docs/development.md) — development workflow and tooling.
 - [`docs/contributing.md`](./docs/contributing.md) — how to contribute.
+- [`docs/migrating-from-legacy.md`](./docs/migrating-from-legacy.md) — migrating from Tab Atkins' railroad-diagrams.
 - [`docs/releasing.md`](./docs/releasing.md) — versioning policy and publish flow.
 - [`docs/roadmap/`](./docs/roadmap/) — milestones for each release.
 
