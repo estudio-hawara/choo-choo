@@ -14,7 +14,7 @@ pnpm add @choo-choo/astro
 pnpm add @choo-choo/parser-ebnf
 ```
 
-`astro` is a peer dependency — range `^4 || ^5`.
+`astro` is a peer dependency — range `^4 || ^5 || ^6 || ^7`. Starting with Astro 6 the runtime requires Node `>=22.12.0`; on older Node use Astro 4 or 5.
 
 ## The `<ChooChoo>` component
 
