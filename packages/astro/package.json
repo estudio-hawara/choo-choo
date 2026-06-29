@@ -1,6 +1,6 @@
 {
   "name": "@choo-choo/astro",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Astro binding for choo-choo: the <ChooChoo> .astro component, SSR-only.",
   "keywords": ["railroad", "railroad-diagram", "syntax-diagram", "astro", "svg"],
   "author": "Estudio Hawara <carlos.capote@hawara.es>",
