@@ -8,6 +8,7 @@ import type {
   Repetition,
   Sequence,
   SourceRange,
+  Special,
   Terminal,
 } from "@choo-choo/core";
 
@@ -17,6 +18,10 @@ export function makeTerminal(text: string, source: SourceRange): Terminal {
 
 export function makeNonTerminal(name: string, source: SourceRange): NonTerminal {
   return { kind: "nonterminal", name, source };
+}
+
+export function makeSpecial(text: string, source: SourceRange): Special {
+  return { kind: "special", text, source };
 }
 
 export function makeSequence(children: Node[], source: SourceRange): Sequence {

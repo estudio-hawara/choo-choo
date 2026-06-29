@@ -16,6 +16,7 @@ import {
   makeRepetition,
   makeRepetitionWithSeparator,
   makeSequence,
+  makeSpecial,
   makeTerminal,
   makeZeroOrMore,
 } from "./factory.js";
@@ -207,6 +208,19 @@ class PythonPegParser {
       case "DSTRING": {
         this.advance();
         const decoded = decodePythonPegString(token.value);
+        // String range: "a"..."z" / 'a'...'z'. The `...` (ELLIPSIS) is only
+        // recognised here, immediately after a string literal, so a stray
+        // `...` elsewhere surfaces as `unexpected ELLIPSIS`. The second
+        // operand must use the same quote kind as the first (pegen rule).
+        if (this.currentType() === "ELLIPSIS") {
+          this.advance();
+          const endToken = this.eat(token.type);
+          const endDecoded = decodePythonPegString(endToken.value);
+          return makeSpecial(`${decoded}...${endDecoded}`, {
+            start: token.source.start,
+            end: endToken.source.end,
+          });
+        }
         return makeTerminal(decoded, token.source);
       }
       case "NAME": {

@@ -4,8 +4,8 @@
 # are simplified where doing so does not change the visual shape of the
 # resulting railroad diagram. The point of this fixture is to exercise every
 # construct the parser supports — leading "|", brackets vs `?`, sep.elem+,
-# lookaheads, soft keywords, the cut operator — without trying to be a
-# faithful copy of CPython's grammar.
+# string ranges, lookaheads, soft keywords, the cut operator — without
+# trying to be a faithful copy of CPython's grammar.
 
 # A standalone leaf rule using a soft keyword.
 soft_keyword:
@@ -18,6 +18,9 @@ boolean:
     | 'True'
     | 'False'
     | 'None'
+
+# String range — pegen's character-range operator ("0"..."9").
+name_continue: name_start | "0"..."9"
 
 # Bracketed optional plus a normal sequence.
 star_targets: star_target ['_' star_target]

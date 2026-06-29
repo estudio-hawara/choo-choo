@@ -214,6 +214,67 @@ describe("Python PEG parser / cardinalities", () => {
   });
 });
 
+describe("Python PEG parser / string ranges", () => {
+  it('maps a double-quoted range "a"..."z" to a special node', () => {
+    const grammar = parse(`r: "0"..."9"`);
+    expect(stripSource(grammar.rules[0]?.diagram.child)).toEqual({
+      kind: "special",
+      text: "0...9",
+    });
+  });
+
+  it("maps a single-quoted range 'a'...'z' to a special node", () => {
+    const grammar = parse(`r: 'a'...'z'`);
+    expect(stripSource(grammar.rules[0]?.diagram.child)).toEqual({
+      kind: "special",
+      text: "a...z",
+    });
+  });
+
+  it("decodes escapes in both range operands", () => {
+    const grammar = parse(`r: '\\x30'...'\\x39'`);
+    expect(stripSource(grammar.rules[0]?.diagram.child)).toEqual({
+      kind: "special",
+      text: "0...9",
+    });
+  });
+
+  it("lifts the docs.python.org name_continue rule unchanged", () => {
+    const grammar = parse(`name_continue: name_start | "0"..."9"`);
+    expect(stripSource(grammar.rules[0]?.diagram.child)).toEqual({
+      kind: "choice",
+      children: [
+        { kind: "nonterminal", name: "name_start" },
+        { kind: "special", text: "0...9" },
+      ],
+    });
+  });
+
+  it("keeps the separator-binder dot working alongside ranges", () => {
+    // `s.e+` uses a single DOT; a range in the same alt must not perturb it.
+    const grammar = parse(`r: "0"..."9" ','.digit+`);
+    expect(stripSource(grammar.rules[0]?.diagram.child)).toEqual({
+      kind: "sequence",
+      children: [
+        { kind: "special", text: "0...9" },
+        {
+          kind: "repetition",
+          child: { kind: "nonterminal", name: "digit" },
+          separator: { kind: "terminal", text: "," },
+        },
+      ],
+    });
+  });
+
+  it("rejects a range whose operands mix quote kinds", () => {
+    expect(() => parse(`r: 'a'..."z"`)).toThrow(GrammarSyntaxError);
+  });
+
+  it("rejects a stray ... whose left operand is not a string literal", () => {
+    expect(() => parse(`r: a ... b`)).toThrow(GrammarSyntaxError);
+  });
+});
+
 describe("Python PEG parser / lookahead, eager parse, cut", () => {
   it("wraps &expr in a labelled group", () => {
     const grammar = parse(`r: &'x' a`);

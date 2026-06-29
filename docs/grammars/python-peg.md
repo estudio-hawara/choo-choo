@@ -41,6 +41,7 @@ The tokenizer is a regex-based lexer with ordered rules, first-match-wins. White
 | `AMP`           | `&`                                  | Positive lookahead predicate.                                 |
 | `BANG`          | `!`                                  | Negative lookahead predicate.                                 |
 | `TILDE`         | `~`                                  | Cut operator. Silently dropped.                               |
+| `ELLIPSIS`      | `\.\.\.`                            | String-range operator (`"0"..."9"`). Must be tried **before** `DOT` so `...` does not lex as three separator-binder dots. |
 | `DOT`           | `.`                                  | Separator binder for `sep.elem+`.                             |
 | `STRING`        | `'(?:\\.|[^'\\])*'`                  | Single-quoted literal. Used by Python for **hard keywords** (`'if'`, `'class'`). |
 | `DSTRING`       | `"(?:\\.|[^"\\])*"`                  | Double-quoted literal. Used by Python for **soft keywords** (`"match"`, `"case"`). |
@@ -51,6 +52,7 @@ Notes:
 - The tokenizer is case-sensitive. The uppercase-vs-lowercase identifier convention is **not** enforced at lex time; it carries meaning at the consumer level (token name vs rule reference) but both kinds map to the same `nonterminal` IR shape.
 - Strings decode the standard escape sequences (`\n`, `\r`, `\t`, `\b`, `\f`, `\v`, `\0`, `\\`, `\'`, `\"`, `\xHH`, `\uHHHH`, `\u{...}`). Unknown escapes pass through as the escaped character. Soft- and hard-keyword strings decode the same way.
 - `&&` must be tried **before** `&` so that `&&expr` does not lex as two `&` tokens.
+- `...` (ELLIPSIS) must be tried **before** `.` (DOT) so that the string-range operator `"0"..."9"` does not lex as three separator-binder dots. A single `.` continues to lex as `DOT` for `sep.elem+`.
 - An unmatched character raises `GrammarSyntaxError` with its line and column. An unterminated string literal does the same.
 
 ## Syntax (productions)
@@ -89,6 +91,8 @@ suffix        = "?"
 
 atom          = STRING                              (* hard keyword *)
               | DSTRING                             (* soft keyword *)
+              | STRING , "..." , STRING             (* string range → special, e.g. "0"..."9" *)
+              | DSTRING , "..." , DSTRING           (* string range, soft-keyword quotes *)
               | NAME                                (* rule or token reference *)
               | "(" , alternatives , ")"            (* transparent grouping *)
               | "[" , alternatives , "]" ;          (* optional group *)
@@ -105,6 +109,14 @@ Alternation (`|`) is outer; sequence (juxtaposition) is inner. `a b | c d` parse
 ### Grouping
 
 Parentheses are transparent: `( alternatives )` returns whatever the inner expression returns, with no extra IR node. Brackets `[ alternatives ]` always wrap the result in an `optional`.
+
+### String ranges
+
+`"0"..."9"` and `'a'...'z'` are pegen's character-range operator — they match any single character in the inclusive range between the two (single-character) string literals. The operator is `...` (ELLIPSIS), distinct from the single `.` separator binder. Both operands must use the **same** quote kind (`'a'...'z'` and `"a"..."z"` are valid; `'a'..."z"` is not — it raises `unexpected DSTRING; expected STRING`).
+
+A string range lowers to a single `special` IR node whose `text` is the two decoded characters joined by `...` (e.g. `"0"..."9"` → `special("0...9")`, `'a'...'z'` → `special("a...z")`). The renderer already supports `special` — it is the same shape `@choo-choo/parser-peg` uses for charsets like `[a-z]` — so no renderer or binding change is needed. Standard escape sequences in the operands are decoded with the same rules as ordinary string literals.
+
+A string range is an atom: it cannot be split by `|`, `(`, `[`, or a rule head. A stray `...` whose left operand is not a string literal (e.g. `NAME ... NAME`) is not consumed and surfaces as `unexpected ELLIPSIS`, because `ELLIPSIS` is only recognised inside the `STRING`/`DSTRING` branch of `atom`.
 
 ### Suffix forms
 
@@ -143,6 +155,7 @@ Pasting raw `python.gram` from the CPython source therefore raises `GrammarSynta
 |-------------------------------------|---------------------------------------------------------------|
 | `'kw'` (escapes decoded)            | `terminal` with `text = "kw"` (hard keyword)                  |
 | `"kw"` (escapes decoded)            | `terminal` with `text = "kw"` (soft keyword — same shape)     |
+| `"a"..."z"` (escapes decoded)       | `special` with `text = "a...z"` (string range)               |
 | `NAME` (rule or token reference)    | `nonterminal` with `name = identifier-text`                   |
 | `a b`                               | `sequence`                                                    |
 | `a \| b`                            | `choice` (visually unordered; consumers read source order)    |
@@ -161,7 +174,7 @@ Hard- vs soft-keyword distinction is **not** preserved in the IR in v0.1 — bot
 
 Every IR node produced by the parser carries `source?: SourceRange` (same conventions as `docs/grammars/peg.md`):
 
-- **Leaves** (`terminal`, `nonterminal`): the token range, including the surrounding quotes.
+- **Leaves** (`terminal`, `nonterminal`, `special`): the token range, including the surrounding quotes. For a string range `"a"..."z"`, the span runs from the opening quote of the first literal through the closing quote of the second.
 - **Composites**: the range spanning the first to last token contributing to the node.
 - **`Diagram`** (per rule): from the leading `NAME` through the end of the rule body.
 - **`GrammarRule.source`**: same as the Diagram's source.
@@ -172,7 +185,7 @@ Throws `GrammarSyntaxError` with a `position: SourcePosition`. Cases:
 
 1. **Unexpected character** (tokenizer) — a character not matched by any rule.
 2. **Unterminated string literal**.
-3. **Unexpected end of input** / **unexpected token** (parser) — when an expected token is absent or a different type.
+3. **Unexpected end of input** / **unexpected token** (parser) — when an expected token is absent or a different type. This covers a stray `...` whose left operand is not a string literal (`NAME ... NAME`): `ELLIPSIS` is only consumed inside the `STRING`/`DSTRING` branch of `atom`, so it surfaces here as `unexpected ELLIPSIS`. A mixed-quote range (`'a'..."z"`) surfaces as `unexpected DSTRING; expected STRING` (the second operand must match the first operand's quote kind).
 4. **Empty alternative** — an alt with no elements (e.g. `r: a |  | b`, or a stray `~` with nothing after it in the alt).
 5. **Stray `+` after a non-dotted atom** — only `s.e+` accepts the dotted form; `s.e*` and `s.e?` are not valid Python PEG.
 6. **Unsupported construct** — `name[…]:` rule annotations, `{ … }` actions, `@directive` headers, and triple-quoted strings raise on the offending character. They are listed in "Constructs deferred to a later milestone" above.
@@ -218,6 +231,16 @@ import_from_as_names: ','.import_from_as_name+
 ```
 
 Result: `repetition(nonterminal("import_from_as_name"), separator = terminal(","))`. The diagram renders one occurrence of `import_from_as_name` with a loopback edge labelled `,`.
+
+### String ranges
+
+```python-peg
+name_start: 'a'...'z' | 'A'...'Z' | '_'
+name_continue: name_start | "0"..."9"
+```
+
+- `name_start`'s child is `choice(special("a...z"), special("A...Z"), terminal("_"))`. Each `'lo'...'hi'` lowers to a `special` whose text is the two decoded characters joined by `...`.
+- `name_continue`'s child is `choice(nonterminal("name_start"), special("0...9"))`. Mixed quote kinds across alternatives are fine; only the two operands of a single `...` must share their quote kind.
 
 ### Lookahead, cut, and soft keywords
 
