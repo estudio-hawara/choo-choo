@@ -14,6 +14,7 @@ export type PythonPegTokenType =
   | "AMP"
   | "BANG"
   | "TILDE"
+  | "ELLIPSIS"
   | "DOT"
   | "STRING"
   | "DSTRING"
@@ -39,6 +40,9 @@ export const pythonPegSpecification = new Specification<PythonPegTokenType>()
   .add(/^&/, "AMP")
   .add(/^!/, "BANG")
   .add(/^~/, "TILDE")
+  // `...` (string-range operator) must be tried before `.` so it does not lex
+  // as three DOT (separator-binder) tokens.
+  .add(/^\.\.\./, "ELLIPSIS")
   .add(/^\./, "DOT")
   // Literals — Python uses single quotes for hard keywords (`'if'`) and
   // double quotes for soft keywords (`"match"`). Both are handled the same

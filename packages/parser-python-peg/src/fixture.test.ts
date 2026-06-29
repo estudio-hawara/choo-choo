@@ -14,6 +14,7 @@ describe("Python PEG parser / python-mini.gram smoke test", () => {
     expect(grammar.rules.map((r) => r.name)).toEqual([
       "soft_keyword",
       "boolean",
+      "name_continue",
       "star_targets",
       "maybe_name",
       "import_from_as_names",

@@ -37,6 +37,21 @@ describe("Python PEG tokenizer / operators", () => {
     const tokens = tokenize("&& &");
     expect(tokens.map((t) => t.type)).toEqual(["AMPAMP", "AMP"]);
   });
+
+  it("lexes ... as a single ELLIPSIS token, not three DOTs", () => {
+    const tokens = tokenize("... .");
+    expect(tokens.map((t) => t.type)).toEqual(["ELLIPSIS", "DOT"]);
+  });
+
+  it("keeps a single . as DOT for the separator binder", () => {
+    const tokens = tokenize("','.x+");
+    expect(tokens.map((t) => [t.type, t.value])).toEqual([
+      ["STRING", "','"],
+      ["DOT", "."],
+      ["NAME", "x"],
+      ["PLUS", "+"],
+    ]);
+  });
 });
 
 describe("Python PEG tokenizer / literals", () => {

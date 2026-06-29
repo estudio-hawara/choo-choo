@@ -41,6 +41,8 @@ boolean:
     | 'False'
     | 'None'
 
+name_continue: name_start | "0"..."9"
+
 import_from_as_names: ','.import_from_as_name+
 
 expression:
