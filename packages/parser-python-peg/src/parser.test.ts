@@ -54,6 +54,17 @@ describe("Python PEG parser / single rules", () => {
     });
   });
 
+  it("decodes triple-quoted string literals", () => {
+    const grammar = parse(`r: '''single''' """double"""`);
+    expect(stripSource(grammar.rules[0]?.diagram.child)).toEqual({
+      kind: "sequence",
+      children: [
+        { kind: "terminal", text: "single" },
+        { kind: "terminal", text: "double" },
+      ],
+    });
+  });
+
   it("treats an identifier as a nonterminal — both lowercase rules and uppercase tokens", () => {
     const lower = parse("start: expr");
     const upper = parse("start: NAME");
@@ -272,6 +283,53 @@ describe("Python PEG parser / string ranges", () => {
 
   it("rejects a stray ... whose left operand is not a string literal", () => {
     expect(() => parse(`r: a ... b`)).toThrow(GrammarSyntaxError);
+  });
+});
+
+describe("Python PEG parser / lexical descriptions", () => {
+  it("maps a lexical description to a special node", () => {
+    const grammar = parse(`r: <any source_character, except backslash and newline>`);
+    expect(stripSource(grammar.rules[0]?.diagram.child)).toEqual({
+      kind: "special",
+      text: "any source_character, except backslash and newline",
+    });
+  });
+
+  it("keeps PEG-looking contents as display text", () => {
+    const grammar = parse(`r: <("r" | "u"), case-insensitive>`);
+    expect(stripSource(grammar.rules[0]?.diagram.child)).toEqual({
+      kind: "special",
+      text: '("r" | "u"), case-insensitive',
+    });
+  });
+
+  it("parses the lexical descriptions in the documented string grammar", () => {
+    const grammar = parse(`
+      STRING: [stringprefix] stringcontent
+      stringprefix: <("r" | "u" | "b" | "br" | "rb"), case-insensitive>
+      stringcontent:
+        | "'''" ( !"'''" longstringitem)* "'''"
+        | '"""' ( !'"""' longstringitem)* '"""'
+        | "'" ( !"'" stringitem)* "'"
+        | '"' ( !'"' stringitem)* '"'
+      stringitem: stringchar | stringescapeseq
+      stringchar: <any source_character, except backslash and newline>
+      longstringitem: stringitem | newline
+      stringescapeseq: "\\\\" <any source_character>
+    `);
+    expect(grammar.rules.map((rule) => rule.name)).toEqual([
+      "STRING",
+      "stringprefix",
+      "stringcontent",
+      "stringitem",
+      "stringchar",
+      "longstringitem",
+      "stringescapeseq",
+    ]);
+  });
+
+  it("rejects an unterminated lexical description", () => {
+    expect(() => parse("r: <any source character")).toThrow(GrammarSyntaxError);
   });
 });
 

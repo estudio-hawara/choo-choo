@@ -113,6 +113,7 @@ class PythonPegParser {
       case "NAME":
       case "STRING":
       case "DSTRING":
+      case "LEXICAL":
       case "LPAREN":
       case "LBRACKET":
       case "AMP":
@@ -227,6 +228,10 @@ class PythonPegParser {
         this.advance();
         return makeNonTerminal(token.value, token.source);
       }
+      case "LEXICAL": {
+        this.advance();
+        return makeSpecial(token.value.slice(1, -1), token.source);
+      }
       case "LPAREN": {
         this.eat("LPAREN");
         const inner = this.parseAlternatives();
@@ -302,7 +307,8 @@ export const pythonPegParser: GrammarParser = {
 // strings share the same escape vocabulary (mirrors the peggy parser's
 // behaviour). Unknown escapes pass through as the escaped character.
 function decodePythonPegString(raw: string): string {
-  const body = raw.slice(1, -1);
+  const quoteLength = raw.startsWith("'''") || raw.startsWith('"""') ? 3 : 1;
+  const body = raw.slice(quoteLength, -quoteLength);
   let out = "";
   let i = 0;
   while (i < body.length) {
