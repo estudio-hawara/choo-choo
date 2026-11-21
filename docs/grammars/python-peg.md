@@ -41,10 +41,11 @@ The tokenizer is a regex-based lexer with ordered rules, first-match-wins. White
 | `AMP`           | `&`                                  | Positive lookahead predicate.                                 |
 | `BANG`          | `!`                                  | Negative lookahead predicate.                                 |
 | `TILDE`         | `~`                                  | Cut operator. Silently dropped.                               |
+| `LT`/`GT`       | `<` / `>`                            | Delimit a lexical-description atom.                           |
 | `ELLIPSIS`      | `\.\.\.`                            | String-range operator (`"0"..."9"`). Must be tried **before** `DOT` so `...` does not lex as three separator-binder dots. |
 | `DOT`           | `.`                                  | Separator binder for `sep.elem+`.                             |
-| `STRING`        | `'(?:\\.|[^'\\])*'`                  | Single-quoted literal. Used by Python for **hard keywords** (`'if'`, `'class'`). |
-| `DSTRING`       | `"(?:\\.|[^"\\])*"`                  | Double-quoted literal. Used by Python for **soft keywords** (`"match"`, `"case"`). |
+| `STRING`        | `'(?:\\.|[^'\\])*'` or `'''…'''`     | Single-quoted literal. Used by Python for **hard keywords** (`'if'`, `'class'`). |
+| `DSTRING`       | `"(?:\\.|[^"\\])*"` or `"""…"""`     | Double-quoted literal. Used by Python for **soft keywords** (`"match"`, `"case"`). |
 | `NAME`          | `[A-Za-z_][A-Za-z0-9_]*`             | Rule reference (lowercase) or token reference (uppercase, e.g. `NAME`, `NUMBER`, `NEWLINE`). |
 
 Notes:
@@ -54,6 +55,7 @@ Notes:
 - `&&` must be tried **before** `&` so that `&&expr` does not lex as two `&` tokens.
 - `...` (ELLIPSIS) must be tried **before** `.` (DOT) so that the string-range operator `"0"..."9"` does not lex as three separator-binder dots. A single `.` continues to lex as `DOT` for `sep.elem+`.
 - An unmatched character raises `GrammarSyntaxError` with its line and column. An unterminated string literal does the same.
+- A lexical description is delimited by `<` and `>`. Its contents are preserved verbatim, excluding the delimiters, and may contain text that is not otherwise valid Python PEG syntax. This form is used by the official Python documentation for lexical conditions such as `<any source_character, except backslash and newline>`.
 
 ## Syntax (productions)
 
@@ -91,6 +93,7 @@ suffix        = "?"
 
 atom          = STRING                              (* hard keyword *)
               | DSTRING                             (* soft keyword *)
+              | "<" , lexical-description , ">"     (* lexical condition *)
               | STRING , "..." , STRING             (* string range → special, e.g. "0"..."9" *)
               | DSTRING , "..." , DSTRING           (* string range, soft-keyword quotes *)
               | NAME                                (* rule or token reference *)
@@ -117,6 +120,12 @@ Parentheses are transparent: `( alternatives )` returns whatever the inner expre
 A string range lowers to a single `special` IR node whose `text` is the two decoded characters joined by `...` (e.g. `"0"..."9"` → `special("0...9")`, `'a'...'z'` → `special("a...z")`). The renderer already supports `special` — it is the same shape `@choo-choo/parser-peg` uses for charsets like `[a-z]` — so no renderer or binding change is needed. Standard escape sequences in the operands are decoded with the same rules as ordinary string literals.
 
 A string range is an atom: it cannot be split by `|`, `(`, `[`, or a rule head. A stray `...` whose left operand is not a string literal (e.g. `NAME ... NAME`) is not consumed and surfaces as `unexpected ELLIPSIS`, because `ELLIPSIS` is only recognised inside the `STRING`/`DSTRING` branch of `atom`.
+
+### Lexical descriptions
+
+The official Python grammar documentation uses `<…>` for lexical conditions that cannot be expressed as ordinary PEG atoms, for example `<any source_character, except backslash and newline>` and `<("r" | "u"), case-insensitive>`. The parser accepts a non-nested `<…>` description as one atom and lowers it to `special`, preserving its contents verbatim without the angle brackets. Thus, `<any source_character, except backslash and newline>` becomes `special("any source_character, except backslash and newline")`.
+
+The contents are display text rather than nested PEG syntax: `|`, quoted strings, commas, and whitespace inside `<…>` are not parsed as alternatives, terminals, or separators. An unclosed lexical description raises `GrammarSyntaxError`.
 
 ### Suffix forms
 
@@ -145,7 +154,6 @@ These appear in CPython's `Grammar/python.gram` source file but **not** in the c
 - Rule return-type annotations: `name[mod_ty]: …`. The `[mod_ty]` would clash with the optional-group bracket form in the body, and disambiguation is non-trivial. v0.1 errors on the leading `[` after a rule name.
 - Semantic actions `{ … }` after an alt.
 - Top-level `@subheader`, `@trailer`, `@class`, `@type`, `@bytecode`, `@memo` directives.
-- Triple-quoted strings (`'''…'''`, `"""…"""`).
 
 Pasting raw `python.gram` from the CPython source therefore raises `GrammarSyntaxError`. Pasting any rule from `docs.python.org/3/reference/grammar.html` works as-is. Future milestones may relax this, see `docs/roadmap/0.2.md`.
 
@@ -156,6 +164,7 @@ Pasting raw `python.gram` from the CPython source therefore raises `GrammarSynta
 | `'kw'` (escapes decoded)            | `terminal` with `text = "kw"` (hard keyword)                  |
 | `"kw"` (escapes decoded)            | `terminal` with `text = "kw"` (soft keyword — same shape)     |
 | `"a"..."z"` (escapes decoded)       | `special` with `text = "a...z"` (string range)               |
+| `<description>`                     | `special` with `text = description` (lexical description)    |
 | `NAME` (rule or token reference)    | `nonterminal` with `name = identifier-text`                   |
 | `a b`                               | `sequence`                                                    |
 | `a \| b`                            | `choice` (visually unordered; consumers read source order)    |
@@ -186,9 +195,10 @@ Throws `GrammarSyntaxError` with a `position: SourcePosition`. Cases:
 1. **Unexpected character** (tokenizer) — a character not matched by any rule.
 2. **Unterminated string literal**.
 3. **Unexpected end of input** / **unexpected token** (parser) — when an expected token is absent or a different type. This covers a stray `...` whose left operand is not a string literal (`NAME ... NAME`): `ELLIPSIS` is only consumed inside the `STRING`/`DSTRING` branch of `atom`, so it surfaces here as `unexpected ELLIPSIS`. A mixed-quote range (`'a'..."z"`) surfaces as `unexpected DSTRING; expected STRING` (the second operand must match the first operand's quote kind).
-4. **Empty alternative** — an alt with no elements (e.g. `r: a |  | b`, or a stray `~` with nothing after it in the alt).
-5. **Stray `+` after a non-dotted atom** — only `s.e+` accepts the dotted form; `s.e*` and `s.e?` are not valid Python PEG.
-6. **Unsupported construct** — `name[…]:` rule annotations, `{ … }` actions, `@directive` headers, and triple-quoted strings raise on the offending character. They are listed in "Constructs deferred to a later milestone" above.
+4. **Unterminated lexical description** — an opening `<` without a closing `>`.
+5. **Empty alternative** — an alt with no elements (e.g. `r: a |  | b`, or a stray `~` with nothing after it in the alt).
+6. **Stray `+` after a non-dotted atom** — only `s.e+` accepts the dotted form; `s.e*` and `s.e?` are not valid Python PEG.
+7. **Unsupported construct** — `name[…]:` rule annotations, `{ … }` actions, and `@directive` headers raise on the offending character. They are listed in "Constructs deferred to a later milestone" above.
 
 The parser does not attempt recovery.
 

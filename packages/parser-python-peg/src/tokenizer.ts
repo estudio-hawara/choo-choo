@@ -14,6 +14,7 @@ export type PythonPegTokenType =
   | "AMP"
   | "BANG"
   | "TILDE"
+  | "LEXICAL"
   | "ELLIPSIS"
   | "DOT"
   | "STRING"
@@ -40,6 +41,9 @@ export const pythonPegSpecification = new Specification<PythonPegTokenType>()
   .add(/^&/, "AMP")
   .add(/^!/, "BANG")
   .add(/^~/, "TILDE")
+  // Lexical descriptions from the official Python grammar documentation.
+  // Their contents are display text, not nested Python PEG syntax.
+  .add(/^<[^>]*>/, "LEXICAL")
   // `...` (string-range operator) must be tried before `.` so it does not lex
   // as three DOT (separator-binder) tokens.
   .add(/^\.\.\./, "ELLIPSIS")
@@ -48,6 +52,8 @@ export const pythonPegSpecification = new Specification<PythonPegTokenType>()
   // double quotes for soft keywords (`"match"`). Both are handled the same
   // way structurally; the parser preserves the token type so consumers can
   // tell them apart if they need to.
+  .add(/^'''(?:\\.|[\s\S]*?)'''/, "STRING")
+  .add(/^"""(?:\\.|[\s\S]*?)"""/, "DSTRING")
   .add(/^'(?:\\.|[^'\\])*'/, "STRING")
   .add(/^"(?:\\.|[^"\\])*"/, "DSTRING")
   // Identifiers — rule references (lowercase by convention) and token
@@ -82,6 +88,12 @@ export class PythonPegTokenizer {
       // No rule matched. Distinguish unterminated string literals from
       // genuinely unexpected characters so the user gets a useful message.
       const c = this.reader.current();
+      if (c === "<") {
+        throw new GrammarSyntaxError(
+          `unterminated lexical description at line ${start.line}, column ${start.column}`,
+          start,
+        );
+      }
       if (c === "'" || c === '"') {
         throw new GrammarSyntaxError(
           `unterminated string literal at line ${start.line}, column ${start.column}`,

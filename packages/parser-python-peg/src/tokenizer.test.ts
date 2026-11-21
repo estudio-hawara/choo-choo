@@ -15,7 +15,7 @@ function tokenize(source: string): Token<PythonPegTokenType>[] {
 
 describe("Python PEG tokenizer / operators", () => {
   it("recognises every single-char operator", () => {
-    const types = tokenize(": | ( ) [ ] ? * + & ! ~ .").map((t) => t.type);
+    const types = tokenize(": | ( ) [ ] ? * + & ! ~ . <text>").map((t) => t.type);
     expect(types).toEqual([
       "COLON",
       "PIPE",
@@ -30,6 +30,7 @@ describe("Python PEG tokenizer / operators", () => {
       "BANG",
       "TILDE",
       "DOT",
+      "LEXICAL",
     ]);
   });
 
@@ -73,6 +74,14 @@ describe("Python PEG tokenizer / literals", () => {
     const [double] = tokenize('"he said \\"hi\\""');
     expect(double?.value).toBe('"he said \\"hi\\""');
   });
+
+  it("captures triple-quoted strings", () => {
+    const tokens = tokenize(`'''single''' """double"""`);
+    expect(tokens.map((token) => [token.type, token.value])).toEqual([
+      ["STRING", "'''single'''"],
+      ["DSTRING", '"""double"""'],
+    ]);
+  });
 });
 
 describe("Python PEG tokenizer / identifiers", () => {
@@ -110,6 +119,10 @@ describe("Python PEG tokenizer / whitespace and comments", () => {
 });
 
 describe("Python PEG tokenizer / errors", () => {
+  it("raises on an unterminated lexical description", () => {
+    expect(() => tokenize("r: <any character")).toThrow("unterminated lexical description");
+  });
+
   it("raises GrammarSyntaxError on an unexpected character", () => {
     let error: unknown;
     try {
